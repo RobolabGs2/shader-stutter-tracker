@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://dpj584i0u2ff0"]
+
+[ext_resource type="Script" uid="uid://cttxei1s2fmbl" path="res://addons/shader_stutter_tracker/debug/debugger_tab.gd" id="1_4rhk3"]
+
+[node name="DebugTab" type="VBoxContainer" unique_id=862536311]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4rhk3")
+
+[node name="Buttons" type="HBoxContainer" parent="." unique_id=1695212102]
+layout_mode = 2
+
+[node name="SaveResources" type="Button" parent="Buttons" unique_id=1322344325]
+layout_mode = 2
+text = "Save all resources"
+
+[node name="Trees" type="SplitContainer" parent="." unique_id=2109644027]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Frames" type="Tree" parent="Trees" unique_id=1329062771]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 2
+hide_root = true
+
+[node name="TriggerInfo" type="Tree" parent="Trees" unique_id=473818693]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MetaDisplay" type="RichTextLabel" parent="Trees" unique_id=932532494]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+selection_enabled = true
+
+[node name="SaveFileDialog" type="FileDialog" parent="." unique_id=52818465]
+
+[connection signal="pressed" from="Buttons/SaveResources" to="SaveFileDialog" method="popup_file_dialog"]
+[connection signal="file_selected" from="SaveFileDialog" to="." method="save_resources"]

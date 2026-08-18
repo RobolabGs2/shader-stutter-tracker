@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://c8eg35ey1wdu"]
+
+[ext_resource type="Script" uid="uid://bhok82vxgfbp8" path="res://addons/shader_stutter_tracker/compiler/shaders_precompiler_scene.gd" id="1_tjfty"]
+[ext_resource type="Texture2D" uid="uid://6xqb0wsxwlik" path="res://addons/shader_stutter_tracker/compiler/godot_icon.svg" id="3_c2mjg"]
+[ext_resource type="Script" uid="uid://bopa6veieyi0b" path="res://addons/shader_stutter_tracker/compiler/shaders_precompiler.gd" id="3_syjg2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rrg6a"]
+bg_color = Color(0.12941177, 0.14901961, 0.19215687, 1)
+
+[sub_resource type="GDScript" id="GDScript_c2mjg"]
+script/source = "extends ProgressBar
+
+@onready var shader_precompiler: Node3D = %ShaderPrecompiler
+
+	
+func _process(delta: float) -> void:
+	value = (float(shader_precompiler.ready_triggers) / float(shader_precompiler.total_triggers) * 100)
+"
+
+[node name="ShaderPrecompilerScene" type="Node" unique_id=325346513]
+script = ExtResource("1_tjfty")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=925293979]
+
+[node name="ShaderPrecompiler" type="Node3D" parent="." unique_id=654450537 node_paths=PackedStringArray("camera")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.9977539)
+script = ExtResource("3_syjg2")
+camera = NodePath("../Camera3D")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1653785301]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_rrg6a")
+
+[node name="CenterContainer" type="CenterContainer" parent="PanelContainer" unique_id=2082111894]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="PanelContainer/CenterContainer" unique_id=439613908]
+layout_mode = 2
+texture = ExtResource("3_c2mjg")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=579032033]
+layout_mode = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 64
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
+
+[node name="ProgressBar" type="ProgressBar" parent="PanelContainer/MarginContainer" unique_id=1883392346]
+layout_mode = 2
+size_flags_vertical = 8
+script = SubResource("GDScript_c2mjg")
+
+[connection signal="all_shaders_compiled" from="ShaderPrecompiler" to="." method="run_next_scene"]

@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bv3kp7tsv0ml4"]
+
+[ext_resource type="Script" uid="uid://nbnn1kdbeqk8" path="res://addons/shader_stutter_tracker/debug/brute_force_analysis.gd" id="1_mt05n"]
+
+[node name="BruteForceDebug" type="Node3D" unique_id=778882056]
+script = ExtResource("1_mt05n")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=781098886]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 4, 0)
+fov = 148.38939
