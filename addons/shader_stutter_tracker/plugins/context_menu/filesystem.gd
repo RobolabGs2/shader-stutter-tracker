@@ -7,7 +7,7 @@ const BruteForceDebug = preload("uid://nbnn1kdbeqk8")
 var save_dialog: EditorFileDialog
 
 var running_scene: String = ""
-var _resource_to_save: SSTScenesCompilerConfig
+var _resource_to_save: SSTSceneExtractorPrecompilerConfig
 
 var _scene_extensions := ResourceLoader.get_recognized_extensions_for_type("PackedScene")
 
@@ -62,7 +62,7 @@ func _get_scenes(paths) -> Array[PackedScene]:
 
 func _extract(paths):
 	var scenes := _get_scenes(paths)
-	var res := SSTScenesCompilerConfig.new()
+	var res := SSTSceneExtractorPrecompilerConfig.new()
 	res.scenes = scenes
 	res.refresh()
 	_save_to_user_file(res)
@@ -80,7 +80,7 @@ func _init_save_dialog() -> void:
 		EditorInterface.get_base_control().add_child(save_dialog)
 
 
-func _save_to_user_file(res: SSTScenesCompilerConfig):
+func _save_to_user_file(res: SSTSceneExtractorPrecompilerConfig):
 	_resource_to_save = res
 	save_dialog.popup_file_dialog()
 

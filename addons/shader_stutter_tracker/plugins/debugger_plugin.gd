@@ -26,7 +26,7 @@ func _capture(message, data, session_id):
 func _setup_session(session_id):
 	var session := get_session(session_id)
 	var tab := DebuggerTabScene.instantiate()
-	tab.name = "Shader Freeze Tracker"
+	tab.name = "Shader Stutter Tracker"
 	session_tabs[session_id] = tab
 	session.add_session_tab(tab)
 	session.started.connect(clear_session.bind(session_id))

@@ -9,8 +9,34 @@ var saw_keys: Dictionary[String, Dictionary] = { }
 func report() -> Array:
 	return on_screen_triggers.map(
 		func(n: Node):
-			return n.get_meta(&"Report"),
+			return n.get_meta(&"SSTReport"),
 	)
+
+static func grouped_report(nodes_report: Array) -> Dictionary:
+	var materials: Array[Material] = []
+	var environments: Array[Environment] = []
+	var nodes: Array[Dictionary] = []
+	for node in nodes_report:
+		for trigger in node["triggers"]:
+			if trigger["type"] == SSTTriggerCandidate.Type.RESOURCE:
+				var path = trigger["path"]
+				var resource := load(path)
+				if resource is Material:
+					materials.push_back(resource)
+				if resource is Shader:
+					var shader := resource as Shader
+					var mat := ShaderMaterial.new()
+					mat.shader = shader
+					materials.push_back(mat)
+				if resource is Environment:
+					environments.push_back(resource)
+			else:
+				nodes.push_back(node["tree_nodes"].back())
+	return {
+		"materials": materials,
+		"environments": environments,
+		"nodes": nodes
+	}
 
 
 func clear() -> void:
@@ -27,7 +53,7 @@ func copy_as_scene() -> PackedScene:
 	root.name = "root"
 	for item in on_screen_triggers:
 		var node := SSTNodeUtils.copy_from_root(item, root)
-		node.set_meta(&"Report", item.get_meta(&"Report"))
+		node.set_meta(&"SSTReport", item.get_meta(&"SSTReport"))
 	assert(packed_scene.pack(root) == Error.OK)
 	root.free()
 	return packed_scene
@@ -51,7 +77,7 @@ func add_new_triggers_force(node: Node, triggers: Array[SSTTriggerCandidate]):
 	if node in on_screen_triggers:
 		return false
 	node.set_meta(
-		&"Report",
+		&"SSTReport",
 		{
 			"tree_nodes": SSTNodeUtils.owners_chain(node),
 			"triggers": triggers.map(

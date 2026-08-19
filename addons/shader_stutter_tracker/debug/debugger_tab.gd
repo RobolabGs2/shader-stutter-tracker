@@ -49,9 +49,12 @@ func add_frame(report: Dictionary):
 
 
 func save_resources(file: String):
-	var res := SSTCompilerConfig.new()
+	var res := SSTShaderPrecompilerConfig.new()
 	for frame in frames:
-		res.add_triggers(frame["nodes"])
+		var report := SSTTriggerCollector.grouped_report(frame["nodes"])
+		res.materials.append_array(report["materials"])
+		res.environments.append_array(report["environments"])
+		res.nodes.append_array(report["nodes"])
 	res.take_over_path(file)
 	ResourceSaver.save(res, file)
 
@@ -113,6 +116,7 @@ func draw_frame(report: Dictionary):
 			triggers_count += 1
 			trigger_item.set_text(1, ", ".join(trigger["shaders"]))
 	triggers_node.set_text(0, "Trigger candidates: %d" % triggers_count)
+	frames_tree.scroll_to_item(triggers_node)
 
 
 func clear():

@@ -1,11 +1,12 @@
-class_name SSTShadersPrecompiler
+@icon("res://addons/shader_stutter_tracker/shader_precompiler/icon.svg")
+class_name SSTShaderPrecompiler
 extends Node3D
 
 signal all_shaders_compiled
-
-@export var config: SSTCompilerConfig
+@export var config: SSTShaderPrecompilerConfigBase
 @export var camera: Camera3D
 @export var batch_size: int = 10
+@export var free_after_compilation:= true
 
 var ready_triggers: int = 0
 var total_triggers: int = 0
@@ -15,10 +16,10 @@ var _stub_texture := GradientTexture1D.new()
 
 
 func _ready():
-	total_triggers = config.materials.size() + config.environments.size() * 2 + config.nodes.size()
+	total_triggers = config.get_materials().size() + config.get_environments().size() * 2 + config.get_nodes().size()
 	_add_material3d(null)
 	_add_canvas_item_material(null)
-	for mat in config.materials:
+	for mat in config.get_materials():
 		if (
 			mat is BaseMaterial3D
 			or SSTResourceUtils.is_shader_with_mode(mat, Shader.Mode.MODE_SPATIAL)
@@ -37,16 +38,18 @@ func _ready():
 		elif (mat is FogMaterial or SSTResourceUtils.is_shader_with_mode(mat, Shader.Mode.MODE_FOG)):
 			_add_fog(mat)
 		await _check_counter()
-	for description in config.nodes:
+	for description in config.get_nodes():
 		_add_node(description)
 		await _check_counter()
-	for env in config.environments:
+	for env in config.get_environments():
 		camera.environment = env
 		await get_tree().process_frame
 		await get_tree().process_frame
 		await _check_counter()
+	await get_tree().process_frame
 	all_shaders_compiled.emit()
-	queue_free()
+	if free_after_compilation:
+		queue_free()
 
 func _check_counter():
 	ready_triggers += 1

@@ -194,11 +194,15 @@ func add_from_mesh(mesh: Mesh, resources: Array[Resource] = []):
 	resources.pop_back()
 
 
-func add_from_grid_map(node: GridMap):
-	var lib := node.mesh_library
+func add_from_mesh_library(lib: MeshLibrary):
 	for id in lib.get_item_list():
 		var mesh := lib.get_item_mesh(id)
 		add_from_mesh(mesh, [lib])
+
+
+func add_from_grid_map(node: GridMap):
+	var lib := node.mesh_library
+	add_from_mesh_library(lib)
 
 
 func add_from_visual_instance_3d(node: VisualInstance3D):
@@ -230,17 +234,6 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 		if gi is CPUParticles3D:
 			var p := gi as CPUParticles3D
 			add_from_mesh(p.mesh)
-			#var key := { "class": "CPUParticles3D" }
-			#fill_keys_by_properties(node, key, &"CPUParticles3D")
-			#triggers.push_back(
-			#SSTTriggerCandidate.new(
-			#SSTTriggerCandidate.Type.NODE,
-			#clazz,
-			#[&"Scene"],
-			#path,
-			#key,
-			#)
-			#)
 		# CSGShape3D
 		elif gi is CSGShape3D:
 			if "material" in gi:

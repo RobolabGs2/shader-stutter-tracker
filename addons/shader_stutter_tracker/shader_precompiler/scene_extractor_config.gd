@@ -1,33 +1,62 @@
 @tool
-class_name SSTScenesCompilerConfig
-extends SSTCompilerConfig
+class_name SSTSceneExtractorPrecompilerConfig
+extends SSTShaderPrecompilerConfigBase
 
-enum SSTExportScanSetting {
-	DISABLED,
-	BAKE_ON_EXPORT,
-	RUNTIME_SCAN,
-}
-enum SSTEditorScanSetting {
-	DISABLED,
-	RUNTIME_SCAN,
+enum SSTSceneExtractorPrecompilerConfigSetting {
+	MANUALLY,
+	RUNTIME,
 }
 
-## Scan scenes for exported build
-@export var rescan_on_export := SSTExportScanSetting.DISABLED
-## Scan scenes for play in editor
-@export var rescan_in_editor := SSTEditorScanSetting.DISABLED
+var _extract_triggers:= SSTSceneExtractorPrecompilerConfigSetting.RUNTIME
 
-@export var scenes: Array[PackedScene]:
+## Scan scenes in runtime
+@export var extract_triggers := SSTSceneExtractorPrecompilerConfigSetting.RUNTIME:
+	get():
+		return _extract_triggers
+	set(value):
+		_extract_triggers = value
+		if Engine.is_editor_hint():
+			notify_property_list_changed()
+			if value == SSTSceneExtractorPrecompilerConfigSetting.RUNTIME:
+				clear()
+
+
+@export var scenes: Array[PackedScene] = []:
 	get:
 		return _scenes
 	set(value):
-		_scenes = value
-		emit_changed()
-
+		_scenes = value.duplicate()
+func _validate_property(property: Dictionary) -> void:
+	if property.name in ["materials", "environments", "nodes"]:
+		property.usage |= PROPERTY_USAGE_READ_ONLY
+	if extract_triggers != SSTSceneExtractorPrecompilerConfigSetting.MANUALLY and property.name in ["update_cache_action", "clear_cache_action"]:
+		property.usage = PROPERTY_USAGE_NONE
+		
+@export_tool_button("Update cache", "Reload") var update_cache_action := refresh
+@export_tool_button("Clear cache", "Remove") var clear_cache_action := clear
+@export_group("Triggers cache")
+@export var materials: Array[Material] = []:
+	get:
+		return _materials
+	set(value):
+		_materials = value.duplicate()
+@export var environments: Array[Environment] = []:
+	get:
+		return _environments
+	set(value):
+		_environments = value.duplicate()
+@export var nodes: Array[Dictionary] = []:
+	get:
+		return _nodes
+	set(value):
+		_nodes = value.duplicate()
 var _refreshing := false
 
 var _scenes: Array[PackedScene] = []
 var _refreshed := false
+var _materials: Array[Material] = []
+var _environments: Array[Environment] = []
+var _nodes: Array[Dictionary] = []
 
 
 static func _extract(node: Node, collector: SSTTriggerCollector):
@@ -38,32 +67,36 @@ static func _extract(node: Node, collector: SSTTriggerCollector):
 
 func get_materials() -> Array[Material]:
 	_lazy_rescan()
-	return super.get_materials()
+	return _materials
 
 
 func get_environments() -> Array[Environment]:
 	_lazy_rescan()
-	return super.get_environments()
+	return _environments
 
 
 func get_nodes() -> Array[Dictionary]:
 	_lazy_rescan()
-	return super.get_nodes()
+	return _nodes
 
+func clear():
+	_materials.clear()
+	_environments.clear()
+	_nodes.clear()
+	notify_property_list_changed()
 
 func refresh(save = true):
 	clear()
 	add_from_scenes(scenes)
-	emit_changed()
+	notify_property_list_changed
 	if save and resource_path != "":
 		ResourceSaver.save(self, resource_path)
 
 
 func add_scenes_from_directory(dir_path: String, recursive: bool):
-	scenes.clear()
 	var scene_exts := ResourceLoader.get_recognized_extensions_for_type("PackedScene")
 	_scan_scenes(dir_path, scene_exts, scenes, recursive)
-	emit_changed()
+	notify_property_list_changed()
 
 
 func add_from_scenes(scenes: Array[PackedScene]):
@@ -82,6 +115,7 @@ func add_from_scenes(scenes: Array[PackedScene]):
 				if new_path == path:
 					return
 				if SSTResourceUtils.is_scene_path(new_path) and not visited_scenes.has(new_path):
+					visited_scenes.set(new_path, true)
 					var new_scene = load(new_path)
 					if new_scene is not PackedScene:
 						return
@@ -100,7 +134,10 @@ func get_scenes_in_folder(folder_path: String, recursive: bool) -> Array[PackedS
 func _add_from_scene(collector: SSTTriggerCollector, scene: PackedScene):
 	var root := scene.instantiate()
 	_extract(root, collector)
-	add_triggers(collector.report())
+	var report := SSTTriggerCollector.grouped_report(collector.report())
+	_materials.append_array(report["materials"])
+	_environments.append_array(report["environments"])
+	_nodes.append_array(report["nodes"])
 	collector.clear()
 	root.free()
 
@@ -133,19 +170,12 @@ func _scan_scenes(
 	dir.list_dir_end()
 
 
-func _on_export():
-	if rescan_on_export == SSTExportScanSetting.BAKE_ON_EXPORT:
-		refresh(false)
-
-
 func _lazy_rescan():
+	if Engine.is_editor_hint():
+		return
 	if _refreshing or _refreshed:
 		return
-	var in_editor := Engine.is_editor_hint() or not OS.has_feature("editor")
-	if not (
-		in_editor and rescan_in_editor == SSTEditorScanSetting.RUNTIME_SCAN
-		or (not in_editor) and rescan_on_export == SSTExportScanSetting.RUNTIME_SCAN
-	):
+	if _extract_triggers != SSTSceneExtractorPrecompilerConfigSetting.RUNTIME:
 		return
 
 	_refreshing = true

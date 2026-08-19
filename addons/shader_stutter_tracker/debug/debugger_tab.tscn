@@ -15,7 +15,7 @@ layout_mode = 2
 
 [node name="SaveResources" type="Button" parent="Buttons" unique_id=1322344325]
 layout_mode = 2
-text = "Save all resources"
+text = "Save all as SSTCompilerConfig"
 
 [node name="Trees" type="SplitContainer" parent="." unique_id=2109644027]
 layout_mode = 2
