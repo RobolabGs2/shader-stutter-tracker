@@ -14,36 +14,6 @@ var key: Dictionary
 var resources_chain: Array[Resource]
 
 
-func _init(
-	type: Type,
-	clazz: String,
-	shaders: Array[StringName],
-	path: String,
-	key: Dictionary = { "path": path },
-	resources_chain: Array[Resource] = [],
-):
-	self.type = type
-	self.clazz = clazz
-	self.shaders = shaders
-	self.path = path
-	self.key = key
-	self.resources_chain = resources_chain
-
-
-func to_dict() -> Dictionary:
-	return {
-		"path": path,
-		"type": type,
-		"class": clazz,
-		"shaders": shaders,
-		"resources": resources_chain.map(
-			func(e: Resource):
-				return { "path": e.resource_path, "class": e.get_class() },
-		),
-		"keys": key,
-	}
-
-
 static func from(obj: Object) -> Array[SSTTriggerCandidate]:
 	var collector := SSTTriggerExtractor.new()
 	if obj is VisualInstance3D:
@@ -70,6 +40,36 @@ static func from_or_unknown(obj: Object) -> Array[SSTTriggerCandidate]:
 		var key := { "class": node.get_class() }
 		SSTTriggerExtractor.fill_keys_by_properties(node, key, StringName(node.get_class()))
 		return [
-			SSTTriggerCandidate.new(Type.NODE, node.get_class(), ["UNKNOWN"], node.get_path(), key)
+			SSTTriggerCandidate.new(Type.NODE, node.get_class(), ["UNKNOWN"], node.get_path(), key),
 		]
 	return []
+
+
+func _init(
+		type: Type,
+		clazz: String,
+		shaders: Array[StringName],
+		path: String,
+		key: Dictionary = { "path": path },
+		resources_chain: Array[Resource] = [],
+):
+	self.type = type
+	self.clazz = clazz
+	self.shaders = shaders
+	self.path = path
+	self.key = key
+	self.resources_chain = resources_chain
+
+
+func to_dict() -> Dictionary:
+	return {
+		"path": path,
+		"type": type,
+		"class": clazz,
+		"shaders": shaders,
+		"resources": resources_chain.map(
+			func(e: Resource):
+				return { "path": e.resource_path, "class": e.get_class() },
+		),
+		"keys": key,
+	}

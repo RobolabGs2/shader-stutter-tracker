@@ -7,7 +7,6 @@ extends SSTShaderPrecompilerConfigBase
 		return get_materials()
 	set(value):
 		set_materials(value.duplicate())
-
 @export var environments: Array[Environment] = []:
 	get:
 		return get_environments()
@@ -55,11 +54,13 @@ func set_nodes(value: Array[Dictionary]) -> void:
 	_nodes = value
 	emit_changed()
 
+
 func merge(another: SSTShaderPrecompilerConfigBase) -> void:
 	_materials.append_array(another.get_materials())
 	_environments.append_array(another.get_environments())
 	_nodes.append_array(another.get_nodes())
 	emit_changed()
+
 
 func clear():
 	_materials.clear()

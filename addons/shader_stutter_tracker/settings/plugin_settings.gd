@@ -6,7 +6,6 @@ const PREFIX := "shader_stutter_tracker/"
 var base := SSTBaseSettings.new("")
 var shader_watcher := SSTShaderWatcher.SSTShaderWatcherSettings.new("shader_watcher/")
 var report := SSTReportService.SSTReportServiceSettings.new("logs/")
-
 var settings: Array[SSTSettingSpec]
 
 

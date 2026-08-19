@@ -53,11 +53,11 @@ static func prepare() -> void:
 		var clazz_name: String = property["class_name"]
 		if ((type == TYPE_BOOL or hint == PROPERTY_HINT_ENUM)):
 			trigger_properties_by_class[&"ParticleProcessMaterial"].push_back(
-				[StringName(name), false]
+				[StringName(name), false],
 			)
 		elif (clazz_name.contains("Texture")):
 			trigger_properties_by_class[&"ParticleProcessMaterial"].push_back(
-				[StringName(name), true]
+				[StringName(name), true],
 			)
 	_prepared = true
 
@@ -69,8 +69,8 @@ static func prepare_keys_fallback(clazz: StringName):
 		var hint: PropertyHint = property["hint"]
 		var name: String = property["name"]
 		if (
-			(type == TYPE_BOOL or hint == PROPERTY_HINT_ENUM)
-			and !name.ends_with("_texture_channel")
+				(type == TYPE_BOOL or hint == PROPERTY_HINT_ENUM)
+				and !name.ends_with("_texture_channel")
 		):
 			trigger_properties_by_class[clazz].push_back([StringName(name), false])
 
@@ -159,7 +159,7 @@ func add_material(mat: Material, prev_resources: Array[Resource] = []):
 				path,
 				k,
 				resources,
-			)
+			),
 		)
 		return
 	else:
@@ -176,7 +176,7 @@ func add_material(mat: Material, prev_resources: Array[Resource] = []):
 			path,
 			key,
 			resources,
-		)
+		),
 	)
 
 
@@ -217,7 +217,7 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 				[&"Scene"],
 				path,
 				{ "class": "Decal" },
-			)
+			),
 		)
 		return
 	# FogVolume
@@ -272,7 +272,7 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 					[&"Scene", &"CanvasSdf"],
 					path,
 					key,
-				)
+				),
 			)
 		# SpriteBase3D
 		elif gi is SpriteBase3D:
@@ -280,7 +280,7 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 			var key := { "class": gi.get_class() }
 			fill_keys_by_properties(node, key, &"SpriteBase3D")
 			triggers.push_back(
-				SSTTriggerCandidate.new(SSTTriggerCandidate.Type.NODE, clazz, [&"Scene"], path, key)
+				SSTTriggerCandidate.new(SSTTriggerCandidate.Type.NODE, clazz, [&"Scene"], path, key),
 			)
 	if node is Light3D:
 		if (node as Light3D).editor_only:
@@ -289,7 +289,7 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 		fill_keys_by_properties(node, key, &"Light3D")
 		fill_keys_by_properties(node, key, node.get_class())
 		triggers.push_back(
-			SSTTriggerCandidate.new(SSTTriggerCandidate.Type.NODE, clazz, [&"LIGHT"], path, key)
+			SSTTriggerCandidate.new(SSTTriggerCandidate.Type.NODE, clazz, [&"LIGHT"], path, key),
 		)
 
 	# Rest subtypes don't use materials (todo: check)
@@ -339,5 +339,5 @@ func add_from_environment(env: Environment):
 				env.resource_path,
 				key,
 				prev_resources,
-			)
+			),
 		)

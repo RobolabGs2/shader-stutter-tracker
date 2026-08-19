@@ -2,7 +2,6 @@
 extends EditorPlugin
 
 const SHADER_WATCHER_AUTOLOAD_NAME = "SSTDebugRuntime"
-
 const DebuggerPlugin := preload("uid://dl1hnuq0wiunt")
 
 var settings := SSTPluginSettings.new()
@@ -16,10 +15,12 @@ func _enter_tree():
 	add_context_menu_plugin(EditorContextMenuPlugin.CONTEXT_SLOT_FILESYSTEM, context_menu)
 	add_inspector_plugin(scene_extractor_config_inspector)
 
+
 func _exit_tree():
 	remove_inspector_plugin(scene_extractor_config_inspector)
 	remove_context_menu_plugin(context_menu)
 	remove_debugger_plugin(debugger)
+
 
 func _run_scene(scene: String, args: PackedStringArray) -> PackedStringArray:
 	if scene != context_menu.running_scene:

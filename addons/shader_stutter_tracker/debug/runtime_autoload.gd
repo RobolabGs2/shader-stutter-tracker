@@ -7,8 +7,8 @@ var settings := SSTPluginSettings.new()
 func _init() -> void:
 	settings.add_to_project_settings()
 	if (
-		"--enable-sst-autoload" not in OS.get_cmdline_args()
-		or not settings.shader_watcher.enable.value
+			"--enable-sst-autoload" not in OS.get_cmdline_args()
+			or not settings.shader_watcher.enable.value
 	):
 		queue_free()
 		return

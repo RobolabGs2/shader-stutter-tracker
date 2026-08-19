@@ -9,7 +9,6 @@ enum SSTCellType {
 }
 
 var frames: Array[Dictionary] = []
-
 var _tree_item_scene: Node
 
 @onready var frames_tree: Tree = %Frames
@@ -105,7 +104,11 @@ func draw_frame(report: Dictionary):
 			var trigger_item := last_item.create_child()
 			trigger_item.set_metadata(
 				0,
-				SSTCellMetadata.new(SSTCellType.TRIGGER, report, { "node": node, "trigger": trigger }),
+				SSTCellMetadata.new(
+					SSTCellType.TRIGGER,
+					report,
+					{ "node": node, "trigger": trigger },
+				),
 			)
 			var path: String = "%s" % trigger["path"]
 			var parts := path.split("/")
@@ -234,10 +237,10 @@ func _on_frames_tree_item_selected():
 
 
 func _on_frames_tree_button_clicked(
-	item: TreeItem,
-	_column: int,
-	id: int,
-	_mouse_button_index: int,
+		item: TreeItem,
+		_column: int,
+		id: int,
+		_mouse_button_index: int,
 ):
 	var meta_raw = item.get_metadata(0)
 	if meta_raw == null:
@@ -268,10 +271,10 @@ func _on_trigger_tree_item_selected() -> void:
 
 
 func _on_trigger_tree_button_clicked(
-	item: TreeItem,
-	_column: int,
-	id: int,
-	_mouse_button_index: int,
+		item: TreeItem,
+		_column: int,
+		id: int,
+		_mouse_button_index: int,
 ) -> void:
 	var meta_raw = item.get_metadata(0)
 	if meta_raw == null:

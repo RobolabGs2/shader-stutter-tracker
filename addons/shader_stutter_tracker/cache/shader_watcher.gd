@@ -7,8 +7,8 @@ var settings: SSTShaderWatcherSettings
 
 ## Calculates the difference between two statistics dictionaries.
 static func _diff(
-	old: Dictionary[String, int],
-	new: Dictionary[String, int],
+		old: Dictionary[String, int],
+		new: Dictionary[String, int],
 ) -> Dictionary[String, int]:
 	var res: Dictionary[String, int] = { }
 

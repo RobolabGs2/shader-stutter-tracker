@@ -10,9 +10,9 @@ var shader_watcher: SSTShaderWatcher
 
 
 func _init(
-	settings: SSTReportServiceSettings,
-	shader_watcher: SSTShaderWatcher,
-	collector_service: SSTTriggerCollectorService,
+		settings: SSTReportServiceSettings,
+		shader_watcher: SSTShaderWatcher,
+		collector_service: SSTTriggerCollectorService,
 ):
 	self.settings = settings
 	self.shader_watcher = shader_watcher
@@ -55,7 +55,7 @@ func send_report_if_needed(viewport: Viewport):
 		if saved:
 			var packed_scene := triggers_collector.copy_as_scene()
 			var scene_path := PLUGIN_DATA_DIR.path_join(ACTIVE_LOGS_SUBDIR).path_join(
-				"%d.tscn" % frame_number
+				"%d.tscn" % frame_number,
 			)
 			saved = ResourceSaver.save(packed_scene, scene_path) == Error.OK
 			report["frame"]["scene_path"] = scene_path

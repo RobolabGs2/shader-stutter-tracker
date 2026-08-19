@@ -5,14 +5,10 @@ const BRUTE_FORCE_DEBUG = preload("uid://bv3kp7tsv0ml4")
 const BruteForceDebug = preload("uid://nbnn1kdbeqk8")
 
 var save_dialog: EditorFileDialog
-
 var running_scene: String = ""
 var _resource_to_save: SSTSceneExtractorPrecompilerConfig
-
 var _scene_extensions := ResourceLoader.get_recognized_extensions_for_type("PackedScene")
 
-func _is_scene_path(path: String) -> bool:
-	return path.get_extension().to_lower() in _scene_extensions
 
 func _exit_tree() -> void:
 	if is_instance_valid(save_dialog):
@@ -20,6 +16,10 @@ func _exit_tree() -> void:
 			save_dialog.file_selected.disconnect(_on_file_selected)
 		save_dialog.queue_free()
 		save_dialog = null
+
+
+func _is_scene_path(path: String) -> bool:
+	return path.get_extension().to_lower() in _scene_extensions
 
 
 func _popup_menu(paths):

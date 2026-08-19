@@ -6,12 +6,6 @@ var on_screen_triggers: Array[Node] = []
 var saw_keys: Dictionary[String, Dictionary] = { }
 
 
-func report() -> Array:
-	return on_screen_triggers.map(
-		func(n: Node):
-			return n.get_meta(&"SSTReport"),
-	)
-
 static func grouped_report(nodes_report: Array) -> Dictionary:
 	var materials: Array[Material] = []
 	var environments: Array[Environment] = []
@@ -35,8 +29,15 @@ static func grouped_report(nodes_report: Array) -> Dictionary:
 	return {
 		"materials": materials,
 		"environments": environments,
-		"nodes": nodes
+		"nodes": nodes,
 	}
+
+
+func report() -> Array:
+	return on_screen_triggers.map(
+		func(n: Node):
+			return n.get_meta(&"SSTReport"),
+	)
 
 
 func clear() -> void:

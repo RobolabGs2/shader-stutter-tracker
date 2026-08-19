@@ -10,6 +10,7 @@ static func create(description: Dictionary) -> Node:
 		node.set(property, properties.get(property))
 	return node
 
+
 static func fill_textures(node: Node, texture: Texture) -> void:
 	for p in node.get_property_list():
 		if p.usage & PROPERTY_USAGE_STORAGE == 0:
@@ -18,7 +19,7 @@ static func fill_textures(node: Node, texture: Texture) -> void:
 			continue
 		var name = p.name
 		node.set(name, texture)
-		
+
 
 static func get_node_path(node: Node) -> NodePath:
 	if node.is_inside_tree():
@@ -52,9 +53,9 @@ static func owners_chain(node: Node, arr: Array[Dictionary] = []) -> Array[Dicti
 
 
 static func copy_recursive(
-	source_node: Node,
-	destination_node: Node,
-	destination_scene_root: Node,
+		source_node: Node,
+		destination_node: Node,
+		destination_scene_root: Node,
 ) -> void:
 	var dst := clone_node_shallow(source_node)
 	dst.name = get_node_path(source_node).get_concatenated_names().replace("/", "_")

@@ -3,14 +3,14 @@ class_name SSTShaderPrecompiler
 extends Node3D
 
 signal all_shaders_compiled
+
 @export var config: SSTShaderPrecompilerConfigBase
 @export var camera: Camera3D
 @export var batch_size: int = 10
-@export var free_after_compilation:= true
+@export var free_after_compilation := true
 
 var ready_triggers: int = 0
 var total_triggers: int = 0
-
 var _quad := SSTResourceUtils.make_skinned_quad()
 var _stub_texture := GradientTexture1D.new()
 
@@ -21,18 +21,18 @@ func _ready():
 	_add_canvas_item_material(null)
 	for mat in config.get_materials():
 		if (
-			mat is BaseMaterial3D
-			or SSTResourceUtils.is_shader_with_mode(mat, Shader.Mode.MODE_SPATIAL)
+				mat is BaseMaterial3D
+				or SSTResourceUtils.is_shader_with_mode(mat, Shader.Mode.MODE_SPATIAL)
 		):
 			_add_material_with_skeleton3d(mat)
 		elif (
-			mat is ParticleProcessMaterial
-			or SSTResourceUtils.is_shader_with_mode(mat, Shader.Mode.MODE_PARTICLES)
+				mat is ParticleProcessMaterial
+				or SSTResourceUtils.is_shader_with_mode(mat, Shader.Mode.MODE_PARTICLES)
 		):
 			_add_particles3d(mat)
 		elif (
-			mat is CanvasItemMaterial
-			or SSTResourceUtils.is_shader_with_mode(mat, Shader.Mode.MODE_CANVAS_ITEM)
+				mat is CanvasItemMaterial
+				or SSTResourceUtils.is_shader_with_mode(mat, Shader.Mode.MODE_CANVAS_ITEM)
 		):
 			_add_canvas_item_material(mat)
 		elif (mat is FogMaterial or SSTResourceUtils.is_shader_with_mode(mat, Shader.Mode.MODE_FOG)):
@@ -51,10 +51,12 @@ func _ready():
 	if free_after_compilation:
 		queue_free()
 
+
 func _check_counter():
 	ready_triggers += 1
 	if ready_triggers % batch_size == 0:
 		await get_tree().process_frame
+
 
 func _add_node(description: Dictionary) -> Node:
 	var node := SSTNodeUtils.create(description)
