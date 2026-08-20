@@ -1,11 +1,10 @@
 class_name SSTNodeUtils
 extends Object
 
-
 static func create(description: Dictionary) -> Node:
 	var clazz: StringName = description[&"class"]
 	var properties: Dictionary = description[&"properties"]
-	var node := ClassDB.instantiate(clazz)
+	var node: Node = ClassDB.instantiate(clazz)
 	for property in properties:
 		node.set(property, properties.get(property))
 	return node
@@ -30,11 +29,13 @@ static func get_node_path(node: Node) -> NodePath:
 static func get_description(node: Node) -> Dictionary:
 	var owner := node.owner
 	var original_scene := node.scene_file_path
-	var owner_path := get_node_path(owner) if owner != null else null
+	@warning_ignore("incompatible_ternary")
+	var owner_path: Variant = get_node_path(owner) if owner != null else null
 	var path := get_node_path(node)
 	var clazz := node.get_class()
-	var script := node.get_script()
-	var script_path := (script as Script).resource_path if script != null else null
+	var script: Variant = node.get_script()
+	@warning_ignore("incompatible_ternary")
+	var script_path: Variant = (script as Script).resource_path if script != null else null
 	return {
 		&"owner": owner_path,
 		&"path": path,
@@ -86,7 +87,7 @@ static func copy_from_root(source_node: Node, destination_scene_root: Node) -> N
 
 
 static func clone_node_shallow(src: Node) -> Node:
-	var dst := Node.new() if src.get_class() == "" else ClassDB.instantiate(src.get_class())
+	var dst: Node = Node.new() if src.get_class() == "" else ClassDB.instantiate(src.get_class())
 
 	copy_properties(src, dst)
 

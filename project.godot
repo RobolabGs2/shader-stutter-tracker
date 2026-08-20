@@ -14,6 +14,10 @@ config/name="Shader Stutter Tracker"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[debug]
+
+gdscript/warnings/directory_rules={}
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

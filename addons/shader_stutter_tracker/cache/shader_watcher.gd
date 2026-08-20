@@ -26,6 +26,7 @@ static func _diff(
 	return res
 
 
+@warning_ignore("shadowed_variable")
 func _init(settings: SSTShaderWatcherSettings):
 	self.settings = settings
 	if settings.clear_cache_on_run.value:

@@ -9,6 +9,7 @@ var collector_service: SSTTriggerCollectorService
 var shader_watcher: SSTShaderWatcher
 
 
+@warning_ignore("shadowed_variable")
 func _init(
 		settings: SSTReportServiceSettings,
 		shader_watcher: SSTShaderWatcher,
@@ -22,8 +23,6 @@ func _init(
 
 func logs_rotation():
 	DirAccess.make_dir_recursive_absolute(PLUGIN_DATA_DIR)
-	var oldest_logs := ""
-	var logs_count := 0
 	var current_time := Time.get_datetime_string_from_system().replace(":", ".")
 	var root := DirAccess.open(PLUGIN_DATA_DIR)
 	if root.dir_exists(ACTIVE_LOGS_SUBDIR):

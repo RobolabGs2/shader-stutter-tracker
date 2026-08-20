@@ -37,6 +37,7 @@ static func from_or_unknown(obj: Object) -> Array[SSTTriggerCandidate]:
 		return triggers
 	if obj is Node:
 		var node := obj as Node
+		@warning_ignore("shadowed_variable")
 		var key := { "class": node.get_class() }
 		SSTTriggerExtractor.fill_keys_by_properties(node, key, StringName(node.get_class()))
 		return [
@@ -45,6 +46,7 @@ static func from_or_unknown(obj: Object) -> Array[SSTTriggerCandidate]:
 	return []
 
 
+@warning_ignore("shadowed_variable")
 func _init(
 		type: Type,
 		clazz: String,

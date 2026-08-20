@@ -130,37 +130,7 @@ func add_material(mat: Material, prev_resources: Array[Resource] = []):
 		shader_types = [&"Particles", &"ParticlesCopy"]
 		fill_keys_by_properties(mat, key, &"ParticleProcessMaterial")
 	elif mat is ShaderMaterial:
-		var sh := mat as ShaderMaterial
-		var path := sh.shader.resource_path
-		var code := sh.shader.code
-
-		var k := { "class": "Shader", "hash": code.hash(), "mode": sh.shader.get_mode() }
-		if savedmats.has(k):
-			return
-		savedmats[k] = true
-		resources.push_back(sh.shader)
-		shader_types = {
-			# Mode used to draw all 3D objects.
-			Shader.Mode.MODE_SPATIAL: [&"Scene"] as Array[StringName],
-			# Mode used to draw all 2D objects.
-			Shader.Mode.MODE_CANVAS_ITEM: [&"Canvas"] as Array[StringName],
-			# Mode used to calculate particle information on a per-particle basis.
-			Shader.Mode.MODE_PARTICLES: [&"Particles", &"ParticlesCopy"] as Array[StringName],
-			# Mode used for drawing skies. Only works with shaders attached to Sky objects.
-			Shader.Mode.MODE_SKY: [&"Sky"] as Array[StringName],
-			# Mode used for setting the color and density of volumetric fog effect.
-			Shader.Mode.MODE_FOG: [&"Sky"] as Array[StringName],
-		}[sh.shader.get_mode()]
-		triggers.push_back(
-			SSTTriggerCandidate.new(
-				SSTTriggerCandidate.Type.RESOURCE,
-				sh.shader.get_class(),
-				shader_types,
-				path,
-				k,
-				resources,
-			),
-		)
+		add_shader(mat.shader, resources)
 		return
 	else:
 		key["path"] = mat.resource_path
@@ -175,6 +145,40 @@ func add_material(mat: Material, prev_resources: Array[Resource] = []):
 			shader_types,
 			path,
 			key,
+			resources,
+		),
+	)
+
+
+func add_shader(shader: Shader, prev_resources: Array[Resource] = []):
+	var resources := prev_resources.duplicate()
+	var path := shader.resource_path
+	var code := shader.code
+	var mode := shader.get_mode()
+	var k := { "class": "Shader", "hash": code.hash(), "mode": mode }
+	if savedmats.has(k):
+		return
+	savedmats[k] = true
+	resources.push_back(shader)
+	var shader_types = {
+		# Mode used to draw all 3D objects.
+		Shader.Mode.MODE_SPATIAL: [&"Scene"] as Array[StringName],
+		# Mode used to draw all 2D objects.
+		Shader.Mode.MODE_CANVAS_ITEM: [&"Canvas"] as Array[StringName],
+		# Mode used to calculate particle information on a per-particle basis.
+		Shader.Mode.MODE_PARTICLES: [&"Particles", &"ParticlesCopy"] as Array[StringName],
+		# Mode used for drawing skies. Only works with shaders attached to Sky objects.
+		Shader.Mode.MODE_SKY: [&"Sky"] as Array[StringName],
+		# Mode used for setting the color and density of volumetric fog effect.
+		Shader.Mode.MODE_FOG: [&"Sky"] as Array[StringName],
+	}[mode]
+	triggers.push_back(
+		SSTTriggerCandidate.new(
+			SSTTriggerCandidate.Type.RESOURCE,
+			shader.get_class(),
+			shader_types,
+			path,
+			k,
 			resources,
 		),
 	)
@@ -262,7 +266,6 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 				add_from_mesh(mm.multimesh.mesh)
 		# Label3D
 		elif gi is Label3D:
-			var l := gi as Label3D
 			var key := { "class": "Label3D" }
 			fill_keys_by_properties(node, key, &"Label3D")
 			triggers.push_back(
@@ -276,7 +279,6 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 			)
 		# SpriteBase3D
 		elif gi is SpriteBase3D:
-			var s := gi as SpriteBase3D
 			var key := { "class": gi.get_class() }
 			fill_keys_by_properties(node, key, &"SpriteBase3D")
 			triggers.push_back(

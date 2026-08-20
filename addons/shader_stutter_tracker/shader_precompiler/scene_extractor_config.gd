@@ -9,7 +9,7 @@ enum SSTSceneExtractorPrecompilerConfigSetting {
 
 ## Scan scenes in runtime
 @export var extract_triggers := SSTSceneExtractorPrecompilerConfigSetting.RUNTIME:
-	get ():
+	get():
 		return _extract_triggers
 	set(value):
 		_extract_triggers = value
@@ -65,10 +65,10 @@ static func _get_scenes_in_folder(folder_path: String, recursive: bool) -> Array
 
 
 static func _scan_scenes(
-	folder_path: String,
-	scene_exts: Array,
-	result: Array[PackedScene],
-	recursive: bool,
+		folder_path: String,
+		scene_exts: Array,
+		result: Array[PackedScene],
+		recursive: bool,
 ) -> void:
 	var dir := DirAccess.open(folder_path)
 	if dir == null:
@@ -96,8 +96,8 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name in ["materials", "environments", "nodes"]:
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 	if (
-		extract_triggers != SSTSceneExtractorPrecompilerConfigSetting.MANUALLY
-		and property.name in ["update_cache_action", "clear_cache_action"]
+			extract_triggers != SSTSceneExtractorPrecompilerConfigSetting.MANUALLY
+			and property.name in ["update_cache_action", "clear_cache_action"]
 	):
 		property.usage = PROPERTY_USAGE_NONE
 
@@ -126,8 +126,7 @@ func clear():
 
 func refresh(save = true):
 	clear()
-	add_from_scenes(scenes)
-	notify_property_list_changed
+	_add_from_scenes()
 	if save and resource_path != "":
 		ResourceSaver.save(self, resource_path)
 
@@ -138,7 +137,7 @@ func add_scenes_from_directory(dir_path: String, recursive: bool):
 	notify_property_list_changed()
 
 
-func add_from_scenes(scenes: Array[PackedScene]):
+func _add_from_scenes():
 	var collector := SSTTriggerCollector.new()
 	var visited_scenes: Dictionary[String, bool] = { }
 	for scene in scenes:
@@ -150,7 +149,7 @@ func add_from_scenes(scenes: Array[PackedScene]):
 		if path == "":
 			continue
 		SSTResourceUtils.walk_dependencies_graph(
-			func(new_path, depth):
+			func(new_path, _depth):
 				if new_path == path:
 					return
 				if SSTResourceUtils.is_scene_path(new_path) and not visited_scenes.has(new_path):

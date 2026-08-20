@@ -29,7 +29,7 @@ class SSTFrustumTriggerCollectorService:
 	var node: Node
 
 
-	func _init(node: Node):
+	@warning_ignore("shadowed_variable") func _init(node: Node):
 		self.node = node
 
 

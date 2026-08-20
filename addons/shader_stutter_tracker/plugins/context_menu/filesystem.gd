@@ -23,7 +23,6 @@ func _is_scene_path(path: String) -> bool:
 
 
 func _popup_menu(paths):
-	var scenes: Array[PackedScene] = []
 	var has_scenes := false
 	for path in paths:
 		if _is_scene_path(path):

@@ -28,6 +28,7 @@ var property_info: Dictionary:
 		}
 
 
+@warning_ignore("shadowed_variable")
 static func _register_setting(
 		name: StringName,
 		default: Variant,
@@ -43,6 +44,7 @@ static func _register_setting(
 		ProjectSettings.set_as_basic(name, basic)
 
 
+@warning_ignore("shadowed_variable")
 func _init(
 		name: StringName,
 		default: Variant,

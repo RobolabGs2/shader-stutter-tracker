@@ -1,9 +1,6 @@
 @tool
 extends EditorInspectorPlugin
 
-var _open_dir_dialog: EditorFileDialog
-
-
 func _can_handle(object):
 	return object is SSTSceneExtractorPrecompilerConfig
 

@@ -95,10 +95,8 @@ func draw_frame(report: Dictionary):
 
 	var triggers_node := frame_node.create_child()
 	var nodes: Array = report.get("nodes", [])
-	var node_items: Dictionary[String, TreeItem] = { }
 	var triggers_count := 0
 	for node in nodes:
-		var branch: Array[Dictionary] = node["tree_nodes"]
 		var last_item: TreeItem = triggers_node
 		for trigger in node["triggers"]:
 			var trigger_item := last_item.create_child()
@@ -139,8 +137,8 @@ func clear_view():
 	trigger_tree.clear()
 
 
-func get_icon(name: String) -> Texture2D:
-	return EditorInterface.get_base_control().get_theme_icon(name, "EditorIcons")
+func get_icon(icon_name: String) -> Texture2D:
+	return EditorInterface.get_base_control().get_theme_icon(icon_name, "EditorIcons")
 
 
 func inherited_from(clazz: StringName, child: StringName):
@@ -164,8 +162,7 @@ func get_or_load_scene(scene_path: String) -> Node:
 
 
 func show_meta(meta):
-	return
-	if not meta:
+	if not meta or not meta_display.visible:
 		return
 	meta_display.text = "%s" % meta.data
 
@@ -182,20 +179,21 @@ func _on_frames_tree_item_selected():
 	if meta.type != SSTCellType.TRIGGER:
 		return
 	var node: Dictionary = meta.data["node"]
-	var trigger: Dictionary = meta.data["trigger"]
 	var branch: Array[Dictionary] = node["tree_nodes"]
 	trigger_tree.clear()
-	var last_node: TreeItem
+	var last_node: TreeItem = null
 	for n in branch:
 		var path: NodePath = n[&"path"]
 		var item := trigger_tree.create_item() if last_node == null else last_node.create_child()
 		var cl = n[&"class"]
 		item.set_icon(0, get_icon(cl))
 		item.set_metadata(0, meta.fork(SSTCellType.NODE, n))
+		@warning_ignore("shadowed_variable_base_class")
 		var name: String = path.get_name(path.get_name_count() - 1)
 		last_node = item
 		var script = n.get(&"script", null)
 		var scene = n.get(&"scene", null)
+		@warning_ignore("shadowed_variable_base_class")
 		var owner = n.get(&"owner", null)
 		var tooltip_parts := [name, "Type: %s" % [cl]]
 		if scene:
@@ -222,6 +220,7 @@ func _on_frames_tree_item_selected():
 			item.set_metadata(0, meta.fork(SSTCellType.RESOURCE, r))
 			var parts := path.split("/")
 			var last := parts.get(parts.size() - 1)
+			@warning_ignore("shadowed_variable_base_class")
 			var name: String = "%s" % last
 			if name == "":
 				name = "(runtime generated)"
@@ -308,12 +307,12 @@ class SSTCellMetadata:
 	var data: Dictionary
 
 
-	func _init(type: SSTCellType, report: Dictionary, data: Dictionary = report):
+	@warning_ignore("shadowed_variable") func _init(type: SSTCellType, report: Dictionary, data: Dictionary = report):
 		self.type = type
 		self.frame_number = report["frame"]["number"]
 		self.full_report = report
 		self.data = data
 
 
-	func fork(type: SSTCellType, data: Dictionary = self.full_report):
+	@warning_ignore("shadowed_variable") func fork(type: SSTCellType, data: Dictionary = self.full_report):
 		return SSTCellMetadata.new(type, full_report, data)
