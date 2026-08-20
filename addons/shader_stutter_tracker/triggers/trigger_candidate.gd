@@ -6,6 +6,7 @@ enum Type {
 	RESOURCE,
 }
 
+var trigger: Object
 var type: Type
 var clazz: String
 var shaders: Array[StringName]
@@ -41,13 +42,14 @@ static func from_or_unknown(obj: Object) -> Array[SSTTriggerCandidate]:
 		var key := { "class": node.get_class() }
 		SSTTriggerExtractor.fill_keys_by_properties(node, key, StringName(node.get_class()))
 		return [
-			SSTTriggerCandidate.new(Type.NODE, node.get_class(), ["UNKNOWN"], node.get_path(), key),
+			SSTTriggerCandidate.new(obj, Type.NODE, node.get_class(), ["UNKNOWN"], node.get_path(), key),
 		]
 	return []
 
 
 @warning_ignore("shadowed_variable")
 func _init(
+		trigger: Object,
 		type: Type,
 		clazz: String,
 		shaders: Array[StringName],
@@ -55,6 +57,7 @@ func _init(
 		key: Dictionary = { "path": path },
 		resources_chain: Array[Resource] = [],
 ):
+	self.trigger = trigger
 	self.type = type
 	self.clazz = clazz
 	self.shaders = shaders
@@ -63,15 +66,16 @@ func _init(
 	self.resources_chain = resources_chain
 
 
-func to_dict() -> Dictionary:
+func to_dict(save_link_to_trigger: bool) -> Dictionary:
 	return {
+		"trigger": trigger if save_link_to_trigger else null,
 		"path": path,
 		"type": type,
 		"class": clazz,
 		"shaders": shaders,
 		"resources": resources_chain.map(
 			func(e: Resource):
-				return { "path": e.resource_path, "class": e.get_class() },
+				return { "path": e.resource_path, "class": e.get_class(), "resource": e },
 		),
 		"keys": key,
 	}

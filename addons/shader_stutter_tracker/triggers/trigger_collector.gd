@@ -4,6 +4,15 @@ extends RefCounted
 var saw_triggers: Dictionary[Dictionary, int] = { }
 var on_screen_triggers: Array[Node] = []
 var saw_keys: Dictionary[String, Dictionary] = { }
+var save_link_to_trigger := false
+
+
+static func _get_or_load_or_null(default, path: String):
+	if default is not EncodedObjectAsID:
+		return default
+	if path != "":
+		return load(path)
+	return null
 
 
 static func grouped_report(nodes_report: Array) -> Dictionary:
@@ -14,18 +23,26 @@ static func grouped_report(nodes_report: Array) -> Dictionary:
 		for trigger in node["triggers"]:
 			if trigger["type"] == SSTTriggerCandidate.Type.RESOURCE:
 				var path = trigger["path"]
-				var resource := load(path)
+				var t = trigger["trigger"]
+
+				var resource: Resource = _get_or_load_or_null(t, path)
 				if resource is Material:
 					materials.push_back(resource)
 				if resource is Shader:
 					var shader := resource as Shader
 					var resources: Array = trigger["resources"]
 					if resources.size() > 1:
-						materials.push_back(load(resources[resources.size() - 2].path))
-					else:
-						var mat := ShaderMaterial.new()
-						mat.shader = shader
-						materials.push_back(mat)
+						var mat_desc = resources[resources.size() - 2]
+						var p = mat_desc.path
+						var r = mat_desc.resource
+						@warning_ignore("confusable_local_declaration")
+						var mat = _get_or_load_or_null(r, p)
+						if mat != null:
+							materials.push_back(mat)
+							continue
+					var mat := ShaderMaterial.new()
+					mat.shader = shader
+					materials.push_back(mat)
 				if resource is Environment:
 					environments.push_back(resource)
 			else:
@@ -35,6 +52,11 @@ static func grouped_report(nodes_report: Array) -> Dictionary:
 		"environments": environments,
 		"nodes": nodes,
 	}
+
+
+@warning_ignore("shadowed_variable")
+func _init(save_link_to_trigger = false):
+	self.save_link_to_trigger = save_link_to_trigger
 
 
 func report() -> Array:
@@ -87,7 +109,7 @@ func add_new_triggers_force(node: Node, triggers: Array[SSTTriggerCandidate]):
 			"tree_nodes": SSTNodeUtils.owners_chain(node),
 			"triggers": triggers.map(
 				func(t: SSTTriggerCandidate):
-					return t.to_dict(),
+					return t.to_dict(save_link_to_trigger),
 			),
 		},
 	)

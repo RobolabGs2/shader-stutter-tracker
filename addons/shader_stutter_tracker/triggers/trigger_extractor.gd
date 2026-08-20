@@ -140,6 +140,7 @@ func add_material(mat: Material, prev_resources: Array[Resource] = []):
 	savedmats[key] = true
 	triggers.push_back(
 		SSTTriggerCandidate.new(
+			mat,
 			SSTTriggerCandidate.Type.RESOURCE,
 			mat.get_class(),
 			shader_types,
@@ -174,6 +175,7 @@ func add_shader(shader: Shader, prev_resources: Array[Resource] = []):
 	}[mode]
 	triggers.push_back(
 		SSTTriggerCandidate.new(
+			shader,
 			SSTTriggerCandidate.Type.RESOURCE,
 			shader.get_class(),
 			shader_types,
@@ -216,6 +218,7 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 	if node is Decal:
 		triggers.push_back(
 			SSTTriggerCandidate.new(
+				node,
 				SSTTriggerCandidate.Type.NODE,
 				clazz,
 				[&"Scene"],
@@ -270,6 +273,7 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 			fill_keys_by_properties(node, key, &"Label3D")
 			triggers.push_back(
 				SSTTriggerCandidate.new(
+					node,
 					SSTTriggerCandidate.Type.NODE,
 					clazz,
 					[&"Scene", &"CanvasSdf"],
@@ -282,7 +286,7 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 			var key := { "class": gi.get_class() }
 			fill_keys_by_properties(node, key, &"SpriteBase3D")
 			triggers.push_back(
-				SSTTriggerCandidate.new(SSTTriggerCandidate.Type.NODE, clazz, [&"Scene"], path, key),
+				SSTTriggerCandidate.new(node, SSTTriggerCandidate.Type.NODE, clazz, [&"Scene"], path, key),
 			)
 	if node is Light3D:
 		if (node as Light3D).editor_only:
@@ -291,7 +295,7 @@ func add_from_visual_instance_3d(node: VisualInstance3D):
 		fill_keys_by_properties(node, key, &"Light3D")
 		fill_keys_by_properties(node, key, node.get_class())
 		triggers.push_back(
-			SSTTriggerCandidate.new(SSTTriggerCandidate.Type.NODE, clazz, [&"LIGHT"], path, key),
+			SSTTriggerCandidate.new(node, SSTTriggerCandidate.Type.NODE, clazz, [&"LIGHT"], path, key),
 		)
 
 	# Rest subtypes don't use materials (todo: check)
@@ -335,6 +339,7 @@ func add_from_environment(env: Environment):
 	if shader_types.size() != 0:
 		triggers.push_back(
 			SSTTriggerCandidate.new(
+				env,
 				SSTTriggerCandidate.Type.RESOURCE,
 				env.get_class(),
 				shader_types,

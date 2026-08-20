@@ -137,7 +137,7 @@ func add_scenes_from_directory(dir_path: String, recursive: bool):
 
 
 func _add_from_scenes():
-	var collector := SSTTriggerCollector.new()
+	var collector := SSTTriggerCollector.new(true)
 	var visited_scenes: Dictionary[String, bool] = { }
 	for scene in scenes:
 		var path := scene.resource_path
