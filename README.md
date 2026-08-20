@@ -49,6 +49,14 @@ Example scene with precompilation: `addons/shader_stutter_tracker/examples/preco
 
 ### Debugging
 
+#### Installation
+
+0. Enable plugin.
+1. Enable `shader_stutter_tracker/shader_watcher/enable` (enabled by default in debug mode).
+2. Enable `shader_stutter_tracker/shader_watcher/clear_cache_on_run` (enabled by default in debug mode).
+3. Play your scene, then open the **Shader Stutter Tracker** debugger tab.
+4. Report settings: `shader_stutter_tracker/report/scan_triggers`, `take_screenshots`, `save_scenes`.
+
 #### Monitors
 
 Add new monitors to track counters for compiled GLSL shaders.
@@ -61,10 +69,6 @@ In the new debug tab you can see all compilation trigger events and known compil
 
 ![Debug tab](screenshots/debugger_tab.png)
 
-1. Enable `shader_stutter_tracker/shader_watcher/enable` (enabled by default in debug mode).
-2. Enable `shader_stutter_tracker/shader_watcher/clear_cache_on_run` (enabled by default in debug mode).
-3. Play your scene, then open the **Shader Stutter Tracker** debugger tab.
-4. Report settings: `shader_stutter_tracker/report/scan_triggers`, `take_screenshots`, `save_scenes`.
 
 #### Brute-force analysis
 
@@ -94,3 +98,19 @@ Standing on the shoulders of giants:
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+
+## Development
+
+### Formatter
+
+[gdscript-formatter](https://github.com/GDQuest/GDScript-formatter)
+```bash
+gdscript-formatter --reorder-code addons/shader_stutter_tracker
+gdscript-formatter --reorder-code addons/shader_stutter_tracker_test
+gdscript-formatter --reorder-code test
+```
+
+### Testing
+
+[GUT framework](https://gut.readthedocs.io/en/latest/index.html)

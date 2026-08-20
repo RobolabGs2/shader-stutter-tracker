@@ -19,9 +19,13 @@ static func grouped_report(nodes_report: Array) -> Dictionary:
 					materials.push_back(resource)
 				if resource is Shader:
 					var shader := resource as Shader
-					var mat := ShaderMaterial.new()
-					mat.shader = shader
-					materials.push_back(mat)
+					var resources: Array = trigger["resources"]
+					if resources.size() > 1:
+						materials.push_back(load(resources[resources.size() - 2].path))
+					else:
+						var mat := ShaderMaterial.new()
+						mat.shader = shader
+						materials.push_back(mat)
 				if resource is Environment:
 					environments.push_back(resource)
 			else:

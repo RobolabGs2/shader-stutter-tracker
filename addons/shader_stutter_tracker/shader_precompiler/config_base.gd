@@ -1,6 +1,7 @@
 @abstract class_name SSTShaderPrecompilerConfigBase
 extends Resource
 
+
 @abstract func get_materials() -> Array[Material]
 
 

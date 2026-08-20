@@ -1,6 +1,7 @@
 class_name SSTSettingSpec
 extends RefCounted
 
+var source: SSTSettingsSource
 var prefix: StringName = ""
 var name: StringName
 var default: Variant
@@ -13,11 +14,9 @@ var full_name: String:
 		return prefix + name
 var value:
 	get():
-		if ProjectSettings.has_setting(full_name):
-			return ProjectSettings.get_setting_with_override(full_name)
-		return default
+		return source.get_setting_or_default(full_name, default)
 	set(val):
-		ProjectSettings.set_setting(full_name, val)
+		source.set_setting(full_name, value)
 var property_info: Dictionary:
 	get():
 		return {
@@ -84,5 +83,53 @@ class SSTSettingSpecGroup:
 	var group_name: String
 
 
-	func _init(name: String):
+	func _init(name: String, prefix: String, source: SSTSettingsSource):
 		group_name = name
+		for s in get_settings_list():
+			s.source = source
+			s.prefix = prefix + name
+
+
+	func get_settings_list() -> Array[SSTSettingSpec]:
+		var res: Array[SSTSettingSpec] = []
+		for p in get_property_list():
+			if p["type"] == TYPE_OBJECT && self[p.name] is SSTSettingSpec:
+				var s := self[p.name] as SSTSettingSpec
+				res.push_back(s)
+		return res
+
+
+@abstract class SSTSettingsSource:
+	@abstract func get_setting_or_default(name: StringName, default: Variant) -> Variant
+
+
+	@abstract func set_setting(name: StringName, value: Variant) -> void
+
+
+class SSTProjectSettingsSource:
+	extends SSTSettingsSource
+	func get_setting_or_default(name: StringName, default: Variant) -> Variant:
+		if ProjectSettings.has_setting(name):
+			return ProjectSettings.get_setting_with_override(name)
+		return default
+
+
+	func set_setting(name: StringName, value: Variant) -> void:
+		ProjectSettings.set_setting(name, value)
+
+
+class SSTDictionarySettingsSource:
+	extends SSTSettingsSource
+	var source := { }
+
+
+	func _init(settings: Dictionary):
+		self.source = settings
+
+
+	func get_setting_or_default(name: StringName, default: Variant) -> Variant:
+		return source.get(name, default)
+
+
+	func set_setting(name: StringName, value: Variant) -> void:
+		source.set(name, value)

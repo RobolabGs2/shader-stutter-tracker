@@ -16,7 +16,13 @@ config/icon="res://icon.svg"
 
 [debug]
 
-gdscript/warnings/directory_rules={}
+gdscript/warnings/directory_rules={
+"res://addons/gut": 0
+}
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [physics]
 

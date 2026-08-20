@@ -1,0 +1,344 @@
+[gd_scene format=3 uid="uid://ei8c6p3rnk87"]
+
+[ext_resource type="Script" uid="uid://d3yg4e5j0x6hg" path="res://addons/shader_stutter_tracker_test/test_types/scene_extractor_precompiler_config_test.gd" id="1_k4n5e"]
+[ext_resource type="Script" uid="uid://cejy88jrfph1m" path="res://addons/shader_stutter_tracker/shader_precompiler/config.gd" id="2_vjbl6"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_4j2lo"]
+blend_mode = 1
+light_mode = 1
+
+[sub_resource type="Resource" id="Resource_tc50a"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("CanvasItemMaterial_4j2lo")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="Shader" id="Shader_jq5bx"]
+code = "shader_type canvas_item;
+
+void fragment() {
+	COLOR = vec4(1.0, 0.0, 0.0, 0.9);
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tc50a"]
+shader = SubResource("Shader_jq5bx")
+
+[sub_resource type="Resource" id="Resource_3fw2g"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("ShaderMaterial_tc50a")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="Environment" id="Environment_tc50a"]
+
+[sub_resource type="Resource" id="Resource_apanj"]
+script = ExtResource("2_vjbl6")
+environments = Array[Environment]([SubResource("Environment_tc50a")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="Shader" id="Shader_apanj"]
+code = "shader_type spatial;
+
+void vertex() {
+	// Called for every vertex the material is visible on.
+}
+
+void fragment() {
+	ALBEDO = vec3(1.0, 1.0, 0);
+}
+
+//void light() {
+//	// Called for every pixel for every light affecting the material.
+//	// Uncomment to replace the default light processing function with this one.
+//}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r4613"]
+render_priority = 0
+shader = SubResource("Shader_apanj")
+
+[sub_resource type="Shader" id="Shader_r4613"]
+code = "shader_type spatial;
+
+void vertex() {
+	// Called for every vertex the material is visible on.
+}
+
+void fragment() {
+	ALBEDO = vec3(0, 1.0, 1.0);
+}
+
+//void light() {
+//	// Called for every pixel for every light affecting the material.
+//	// Uncomment to replace the default light processing function with this one.
+//}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yqthy"]
+render_priority = 0
+shader = SubResource("Shader_r4613")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r4613"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_yqthy"]
+material = SubResource("StandardMaterial3D_r4613")
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_yqthy"]
+
+[sub_resource type="Resource" id="Resource_r4613"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("StandardMaterial3D_r4613"), SubResource("ORMMaterial3D_yqthy"), SubResource("ShaderMaterial_r4613"), SubResource("ShaderMaterial_yqthy")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="Shader" id="Shader_tc50a"]
+code = "shader_type spatial;
+
+void vertex() {
+	// Called for every vertex the material is visible on.
+}
+
+void fragment() {
+	ALBEDO = vec3(0, 1.0, 0);
+}
+
+//void light() {
+//	// Called for every pixel for every light affecting the material.
+//	// Uncomment to replace the default light processing function with this one.
+//}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3fw2g"]
+render_priority = 0
+shader = SubResource("Shader_tc50a")
+
+[sub_resource type="QuadMesh" id="QuadMesh_apanj"]
+material = SubResource("ShaderMaterial_3fw2g")
+
+[sub_resource type="Resource" id="Resource_yqthy"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("ShaderMaterial_3fw2g")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3fw2g"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_r4613"]
+material = SubResource("StandardMaterial3D_3fw2g")
+
+[sub_resource type="MultiMesh" id="MultiMesh_yqthy"]
+mesh = SubResource("QuadMesh_r4613")
+
+[sub_resource type="Resource" id="Resource_jyf0k"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("StandardMaterial3D_3fw2g")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_tc50a"]
+
+[sub_resource type="Resource" id="Resource_jpjr3"]
+script = ExtResource("2_vjbl6")
+nodes = Array[Dictionary]([{
+&"class": "Sprite3D",
+&"properties": {}
+}])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="Resource" id="Resource_u2lrv"]
+script = ExtResource("2_vjbl6")
+nodes = Array[Dictionary]([{
+&"class": "Label3D",
+&"properties": {
+"text": "Text"
+}
+}])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_tc50a"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jpjr3"]
+emission_enabled = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_rv0n6"]
+material = SubResource("StandardMaterial3D_jpjr3")
+
+[sub_resource type="Resource" id="Resource_rv0n6"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("ParticleProcessMaterial_tc50a"), SubResource("StandardMaterial3D_jpjr3")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="Shader" id="Shader_3fw2g"]
+code = "shader_type particles;
+
+void start() {
+	// Called when a particle is spawned.
+}
+
+void process() {
+	// Called every frame on existing particles (according to the Fixed FPS property).
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_apanj"]
+shader = SubResource("Shader_3fw2g")
+
+[sub_resource type="PlaceholderMesh" id="PlaceholderMesh_8gejg"]
+
+[sub_resource type="Resource" id="Resource_8gejg"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("ShaderMaterial_apanj")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tc50a"]
+
+[sub_resource type="Resource" id="Resource_cexme"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("StandardMaterial3D_tc50a")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="Resource" id="Resource_j4ooh"]
+script = ExtResource("2_vjbl6")
+nodes = Array[Dictionary]([{
+&"class": "OmniLight3D",
+&"properties": {}
+}])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="Shader" id="Shader_yqthy"]
+code = "shader_type spatial;
+
+void vertex() {
+	// Called for every vertex the material is visible on.
+}
+
+void fragment() {
+	ALBEDO = vec3(0, 1.0, 0);
+	ALPHA = sin(TIME);
+}
+
+//void light() {
+//	// Called for every pixel for every light affecting the material.
+//	// Uncomment to replace the default light processing function with this one.
+//}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jpjr3"]
+render_priority = 0
+shader = SubResource("Shader_yqthy")
+
+[sub_resource type="Shader" id="Shader_rv0n6"]
+code = "shader_type spatial;
+
+void vertex() {
+	// Called for every vertex the material is visible on.
+}
+
+void fragment() {
+	ALBEDO = vec3(1.0, 0.0, 0);
+	ALPHA = cos(TIME);
+}
+
+//void light() {
+//	// Called for every pixel for every light affecting the material.
+//	// Uncomment to replace the default light processing function with this one.
+//}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8gejg"]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_jpjr3")
+shader = SubResource("Shader_rv0n6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cexme"]
+next_pass = SubResource("ShaderMaterial_8gejg")
+
+[sub_resource type="Resource" id="Resource_rkub8"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("StandardMaterial3D_cexme"), SubResource("ShaderMaterial_8gejg"), SubResource("ShaderMaterial_jpjr3")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_apanj"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_jpjr3"]
+material = SubResource("StandardMaterial3D_apanj")
+
+[sub_resource type="Resource" id="Resource_cnuon"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("StandardMaterial3D_apanj")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[node name="DifferentNodeTypesTest" type="Node" unique_id=1619663153]
+
+[node name="CanvasItemMaterial" type="Panel" parent="." unique_id=131607298]
+material = SubResource("CanvasItemMaterial_4j2lo")
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_tc50a")
+
+[node name="Shader_CanvasItemMaterial" type="Panel" parent="." unique_id=1830491089]
+material = SubResource("ShaderMaterial_tc50a")
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_3fw2g")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=930468103]
+environment = SubResource("Environment_tc50a")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_apanj")
+
+[node name="StandartMaterial3D + GeometryInstance3D fields" type="MeshInstance3D" parent="." unique_id=1032800605]
+material_override = SubResource("ShaderMaterial_r4613")
+material_overlay = SubResource("ShaderMaterial_yqthy")
+mesh = SubResource("QuadMesh_yqthy")
+surface_material_override/0 = SubResource("ORMMaterial3D_yqthy")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_r4613")
+
+[node name="Shader_Spatial" type="MeshInstance3D" parent="." unique_id=2117197310]
+mesh = SubResource("QuadMesh_apanj")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_yqthy")
+
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="." unique_id=1736340216]
+multimesh = SubResource("MultiMesh_yqthy")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_jyf0k")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1629821784]
+texture = SubResource("PlaceholderTexture2D_tc50a")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_jpjr3")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=1435888632]
+text = "Text"
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_u2lrv")
+
+[node name="ParticleProcessMaterial" type="GPUParticles3D" parent="." unique_id=454505048]
+process_material = SubResource("ParticleProcessMaterial_tc50a")
+draw_pass_1 = SubResource("QuadMesh_rv0n6")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_rv0n6")
+
+[node name="Shader_ParticleProcessMaterial" type="GPUParticles3D" parent="." unique_id=442596718]
+process_material = SubResource("ShaderMaterial_apanj")
+draw_pass_1 = SubResource("PlaceholderMesh_8gejg")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_8gejg")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=372357573]
+material = SubResource("StandardMaterial3D_tc50a")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_cexme")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1573076439]
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_j4ooh")
+
+[node name="Material with Next Pass" type="MeshInstance3D" parent="." unique_id=452766448]
+material_override = SubResource("StandardMaterial3D_cexme")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_rkub8")
+
+[node name="CPUParticles3D" type="CPUParticles3D" parent="." unique_id=1667554021]
+mesh = SubResource("QuadMesh_jpjr3")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_cnuon")

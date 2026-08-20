@@ -4,19 +4,26 @@ extends Node3D
 
 signal all_shaders_compiled
 
+@export var compile_on_ready := true
 @export var config: SSTShaderPrecompilerConfigBase
 @export var camera: Camera3D
 @export var batch_size: int = 10
 @export var free_after_compilation := true
 
 var ready_triggers: int = 0
-var total_triggers: int = 0
+var total_triggers: int:
+	get():
+		return config.get_materials().size() + config.get_environments().size() * 2 + config.get_nodes().size()
 var _quad := SSTResourceUtils.make_skinned_quad()
 var _stub_texture := GradientTexture1D.new()
 
 
 func _ready():
-	total_triggers = config.get_materials().size() + config.get_environments().size() * 2 + config.get_nodes().size()
+	if compile_on_ready:
+		await compile()
+
+
+func compile():
 	_add_material3d(null)
 	_add_canvas_item_material(null)
 	for mat in config.get_materials():

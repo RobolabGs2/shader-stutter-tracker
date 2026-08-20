@@ -1,6 +1,7 @@
 class_name SSTResourceUtils
 extends Object
 
+
 static func is_shader_with_mode(mat: Material, mode: Shader.Mode):
 	return mat is ShaderMaterial and (mat as ShaderMaterial).shader.get_mode() == mode
 

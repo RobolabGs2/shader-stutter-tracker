@@ -1,6 +1,7 @@
 class_name SSTNodeUtils
 extends Object
 
+
 static func create(description: Dictionary) -> Node:
 	var clazz: StringName = description[&"class"]
 	var properties: Dictionary = description[&"properties"]

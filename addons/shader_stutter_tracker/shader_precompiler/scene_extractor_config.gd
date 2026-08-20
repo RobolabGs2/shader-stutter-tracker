@@ -38,7 +38,6 @@ enum SSTSceneExtractorPrecompilerConfigSetting {
 		return _nodes
 	set(value):
 		_nodes = value.duplicate()
-
 @export_tool_button("Update cache", "Reload") var update_cache_action := refresh
 @export_tool_button("Clear cache", "Remove") var clear_cache_action := clear
 
@@ -168,7 +167,7 @@ func _add_from_scene(collector: SSTTriggerCollector, scene: PackedScene):
 	var report := SSTTriggerCollector.grouped_report(collector.report())
 	_materials.append_array(report["materials"])
 	_environments.append_array(report["environments"])
-	_nodes.append_array(report["nodes"])
+	_nodes.append_array(report["nodes"].map(func(dict: Dictionary): return { &"class": dict.get(&"class"), &"properties": dict.get(&"properties") }))
 	collector.clear()
 	root.free()
 
