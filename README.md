@@ -1,3 +1,9 @@
+
+
+
+
+
+
 # Shader Stutter Tracker
 
 A Godot 4.6+ add-on to debug and fix shader compilation stutters in the Compatibility rendering pipeline.
@@ -5,7 +11,13 @@ A Godot 4.6+ add-on to debug and fix shader compilation stutters in the Compatib
 ## Usage
 
 Example based on [Third Person Shooter Demo](https://github.com/godotengine/tps-demo)
-<video controls src="screenshots/tps_demo.mp4" title="Usage example on Third Person Shooter Demo"></video>
+
+### Without precompilation
+https://github.com/user-attachments/assets/edb6362d-8b65-477c-90a7-7c9e330794f5
+
+### With precompilation by plugin and example preload scene
+https://github.com/user-attachments/assets/2f246d89-a1f4-46d4-bca1-596d1a696758
+
 
 ### Shader precompilation
 
