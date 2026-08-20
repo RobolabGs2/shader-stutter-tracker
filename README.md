@@ -8,6 +8,17 @@
 
 A Godot 4.6+ add-on to debug and fix shader compilation stutters in the Compatibility rendering pipeline.
 
+## Limitations
+
+1. Currently supports 3D nodes and Control; not all 2D nodes and Camera2D are supported yet.
+2. Debugging tools do not yet capture all possible compilation triggers; the project is under 
+development.
+
+## Installation
+
+* Download the latest release and paste it into your Godot project
+* For debugging tools: Enable the addon in the Project Settings
+
 ## Usage
 
 Example based on [Third Person Shooter Demo](https://github.com/godotengine/tps-demo)
@@ -15,7 +26,7 @@ Example based on [Third Person Shooter Demo](https://github.com/godotengine/tps-
 ### Without precompilation
 https://github.com/user-attachments/assets/edb6362d-8b65-477c-90a7-7c9e330794f5
 
-### With precompilation by plugin and example preload scene
+### With plugin-based precompilation and the example preload scene
 https://github.com/user-attachments/assets/2f246d89-a1f4-46d4-bca1-596d1a696758
 
 
@@ -50,8 +61,8 @@ In the new debug tab you can see all compilation trigger events and known compil
 
 ![Debug tab](screenshots/debugger_tab.png)
 
-1. Enable `shader_stutter_tracker/shader_watcher/enable` — enabled by default in debug mode.
-2. Enable `shader_stutter_tracker/shader_watcher/clear_cache_on_run` to clear the Godot shader cache before each run — enabled by default in debug mode.
+1. Enable `shader_stutter_tracker/shader_watcher/enable` (enabled by default in debug mode).
+2. Enable `shader_stutter_tracker/shader_watcher/clear_cache_on_run` (enabled by default in debug mode).
 3. Play your scene, then open the **Shader Stutter Tracker** debugger tab.
 4. Report settings: `shader_stutter_tracker/report/scan_triggers`, `take_screenshots`, `save_scenes`.
 
@@ -66,11 +77,11 @@ All settings are under the `shader_stutter_tracker/` prefix in Editor Settings.
 
 | Group | Setting | Default | Default.debug | Description |
 |-------|---------|---------|---------------|-------------|
-| base | `preserve_settings_when_disabled` | false | false | Keep settings after disabling plugin |
-| shader_watcher | `enable` | false | true | Enable runtime shader cache watcher |
-| shader_watcher | `clear_cache_on_run` | false | true | Clear shader cache before each run |
+| base | `preserve_settings_when_disabled` | false | false | Keep settings after disabling the plugin |
+| shader_watcher | `enable` | false | true | Enable the runtime shader cache watcher |
+| shader_watcher | `clear_cache_on_run` | false | true | Clear the shader cache before each run |
 | report | `scan_triggers` | false | true | Collect trigger candidates on stutter |
-| report | `take_screenshots` | false | true | Capture viewport screenshot per frame |
+| report | `take_screenshots` | false | true | Capture a viewport screenshot per frame |
 | report | `save_scenes` | false | true | Save debug scene with visible nodes |
 | report | `preserve_last_logs` | 3 | 3 | Number of log directories to keep in `user://shader_stutter_tracker/logs` |
 
