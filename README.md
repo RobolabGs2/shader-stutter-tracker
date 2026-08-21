@@ -67,6 +67,12 @@ Add new monitors to track counters for compiled GLSL shaders.
 
 In the new debug tab you can see all compilation trigger events and known compilation triggers detected by the plugin.
 
+Some shaders are compiled on the second frame after their triggers' appearance:
+- Environment related,
+- Particles.
+
+In that case, see the previous frame for the triggers.
+
 ![Debug tab](screenshots/debugger_tab.png)
 
 
