@@ -118,15 +118,16 @@ func add_new_triggers_force(node: Node, triggers: Array[SSTTriggerCandidate]):
 
 
 func add_in_frustum_3d(node: Node, cam: Camera3D):
+	var wrapper := SSTRuntimeNodeWrapper.new(node)
 	if node is WorldEnvironment:
-		add_new_triggers(node, SSTTriggerCandidate.from(node))
+		add_new_triggers(node, SSTTriggerCandidate.from(wrapper))
 	elif node is Camera3D and cam == node and cam.environment != null:
-		add_new_triggers(node, SSTTriggerCandidate.from(node))
+		add_new_triggers(node, SSTTriggerCandidate.from(wrapper))
 	elif node is Node3D:
 		if SSTNodeUtils.is_actually_on_screen_3d(node):
-			add_new_triggers(node, SSTTriggerCandidate.from(node))
+			add_new_triggers(node, SSTTriggerCandidate.from(wrapper))
 	elif node is CanvasItem:
 		# if node is Control: TODO: is_actually_on_screen_2d
-		add_new_triggers(node, SSTTriggerCandidate.from(node))
+		add_new_triggers(node, SSTTriggerCandidate.from(wrapper))
 	for child in node.get_children():
 		add_in_frustum_3d(child, cam)

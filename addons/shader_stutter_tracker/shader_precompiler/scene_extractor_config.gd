@@ -51,7 +51,7 @@ var _nodes: Array[Dictionary] = []
 
 
 static func _extract(node: Node, collector: SSTTriggerCollector):
-	collector.add_new_triggers(node, SSTTriggerCandidate.from(node))
+	collector.add_new_triggers(node, SSTTriggerCandidate.from(SSTRuntimeNodeWrapper.new(node)))
 	for child in node.get_children(true):
 		_extract(child, collector)
 

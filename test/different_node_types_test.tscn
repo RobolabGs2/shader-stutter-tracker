@@ -2,6 +2,26 @@
 
 [ext_resource type="Script" uid="uid://d3yg4e5j0x6hg" path="res://addons/shader_stutter_tracker_test/test_types/scene_extractor_precompiler_config_test.gd" id="1_k4n5e"]
 [ext_resource type="Script" uid="uid://cejy88jrfph1m" path="res://addons/shader_stutter_tracker/shader_precompiler/config.gd" id="2_vjbl6"]
+[ext_resource type="MeshLibrary" uid="uid://cykqe5lc8c4yh" path="res://test/mesh_library/mesh_library.tres" id="3_6ur1o"]
+[ext_resource type="Material" uid="uid://m1w6an4q14i" path="res://test/mesh_library/mat_01.tres" id="4_c7vic"]
+[ext_resource type="Material" uid="uid://ikc0erno3ytg" path="res://test/mesh_library/mat_02.tres" id="5_h2hc5"]
+[ext_resource type="Material" uid="uid://us0ij8571ivk" path="res://test/mesh_library/mat_03.tres" id="6_6toor"]
+
+[sub_resource type="GDScript" id="GDScript_k4n5e"]
+script/source = "extends Node
+
+#func _ready():
+	#var scene := load(self.scene_file_path) as PackedScene
+	#var state := scene.get_state()
+	#for i in range(0, state.get_node_count()):
+		#var type := state.get_node_type(i)
+		#print(i, \" \", type)
+		#for j in range(state.get_node_property_count(i)):
+			#var property := state.get_node_property_name(i, j)
+			#var value = state.get_node_property_value(i, j)
+			#print(\"  \", property, \" = \", value)
+	#get_tree().quit()
+"
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_4j2lo"]
 blend_mode = 1
@@ -76,6 +96,11 @@ void fragment() {
 render_priority = 0
 shader = SubResource("Shader_r4613")
 
+[sub_resource type="Resource" id="Resource_r4613"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("ShaderMaterial_r4613"), SubResource("ShaderMaterial_yqthy")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r4613"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_yqthy"]
@@ -83,38 +108,21 @@ material = SubResource("StandardMaterial3D_r4613")
 
 [sub_resource type="ORMMaterial3D" id="ORMMaterial3D_yqthy"]
 
-[sub_resource type="Resource" id="Resource_r4613"]
+[sub_resource type="Resource" id="Resource_k4n5e"]
 script = ExtResource("2_vjbl6")
-materials = Array[Material]([SubResource("StandardMaterial3D_r4613"), SubResource("ORMMaterial3D_yqthy"), SubResource("ShaderMaterial_r4613"), SubResource("ShaderMaterial_yqthy")])
+materials = Array[Material]([SubResource("StandardMaterial3D_r4613"), SubResource("ORMMaterial3D_yqthy")])
 metadata/_custom_type_script = "uid://cejy88jrfph1m"
 
-[sub_resource type="Shader" id="Shader_tc50a"]
-code = "shader_type spatial;
-
-void vertex() {
-	// Called for every vertex the material is visible on.
-}
-
-void fragment() {
-	ALBEDO = vec3(0, 1.0, 0);
-}
-
-//void light() {
-//	// Called for every pixel for every light affecting the material.
-//	// Uncomment to replace the default light processing function with this one.
-//}
-"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3fw2g"]
-render_priority = 0
-shader = SubResource("Shader_tc50a")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k4n5e"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.6)
 
 [sub_resource type="QuadMesh" id="QuadMesh_apanj"]
-material = SubResource("ShaderMaterial_3fw2g")
+material = SubResource("StandardMaterial3D_k4n5e")
 
 [sub_resource type="Resource" id="Resource_yqthy"]
 script = ExtResource("2_vjbl6")
-materials = Array[Material]([SubResource("ShaderMaterial_3fw2g")])
+materials = Array[Material]([SubResource("StandardMaterial3D_k4n5e")])
 metadata/_custom_type_script = "uid://cejy88jrfph1m"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3fw2g"]
@@ -263,7 +271,24 @@ script = ExtResource("2_vjbl6")
 materials = Array[Material]([SubResource("StandardMaterial3D_apanj")])
 metadata/_custom_type_script = "uid://cejy88jrfph1m"
 
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_k4n5e"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vjbl6"]
+particle_flag_disable_z = true
+gravity = Vector3(0, 98, 0)
+
+[sub_resource type="Resource" id="Resource_1oxlo"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([SubResource("ParticleProcessMaterial_vjbl6")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[sub_resource type="Resource" id="Resource_27gxc"]
+script = ExtResource("2_vjbl6")
+materials = Array[Material]([ExtResource("4_c7vic"), ExtResource("5_h2hc5"), ExtResource("6_6toor")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
 [node name="DifferentNodeTypesTest" type="Node" unique_id=1619663153]
+script = SubResource("GDScript_k4n5e")
 
 [node name="CanvasItemMaterial" type="Panel" parent="." unique_id=131607298]
 material = SubResource("CanvasItemMaterial_4j2lo")
@@ -284,13 +309,17 @@ environment = SubResource("Environment_tc50a")
 script = ExtResource("1_k4n5e")
 expected = SubResource("Resource_apanj")
 
-[node name="StandartMaterial3D + GeometryInstance3D fields" type="MeshInstance3D" parent="." unique_id=1032800605]
+[node name="GeometryInstance3D" type="MeshInstance3D" parent="." unique_id=1032800605]
 material_override = SubResource("ShaderMaterial_r4613")
 material_overlay = SubResource("ShaderMaterial_yqthy")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_r4613")
+
+[node name="MeshInstance3D surface override" type="MeshInstance3D" parent="." unique_id=1494575528]
 mesh = SubResource("QuadMesh_yqthy")
 surface_material_override/0 = SubResource("ORMMaterial3D_yqthy")
 script = ExtResource("1_k4n5e")
-expected = SubResource("Resource_r4613")
+expected = SubResource("Resource_k4n5e")
 
 [node name="Shader_Spatial" type="MeshInstance3D" parent="." unique_id=2117197310]
 mesh = SubResource("QuadMesh_apanj")
@@ -342,3 +371,14 @@ expected = SubResource("Resource_rkub8")
 mesh = SubResource("QuadMesh_jpjr3")
 script = ExtResource("1_k4n5e")
 expected = SubResource("Resource_cnuon")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=57467694]
+texture = SubResource("PlaceholderTexture2D_k4n5e")
+process_material = SubResource("ParticleProcessMaterial_vjbl6")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_1oxlo")
+
+[node name="GridMap" type="GridMap" parent="." unique_id=618218537]
+mesh_library = ExtResource("3_6ur1o")
+script = ExtResource("1_k4n5e")
+expected = SubResource("Resource_27gxc")

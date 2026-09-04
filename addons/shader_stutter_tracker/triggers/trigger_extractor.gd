@@ -7,8 +7,51 @@ static var _prepared := false
 var triggers: Array[SSTTriggerCandidate] = []
 var savedmats := { }
 
+func extract(node: SSTNodeWrapper):
+	if not _prepared:
+		prepare()
+	var clazz := node.node_class()
+	if tree.has(clazz):
+		var descriptor := tree[clazz]
+		for property in descriptor.properties:
+			add_resource(node.node_property(property))
+	var c := StringName(clazz)
+	if _node_trigger_types.has(c):
+		var key = {"class": clazz}
+		fill_keys_by_properties(node, key, c)
+		var parent := _node_trigger_types[c]
+		if parent != c:
+			fill_keys_by_properties(node, key, parent)
+		triggers.push_back(
+			SSTTriggerCandidate.new(
+				node,
+				SSTTriggerCandidate.Type.NODE,
+				clazz,
+				_node_trigger_shaders_types[parent],
+				node.node_path(),
+				key
+			),
+		)
+	if c == &"MeshInstance3D":
+		for i in range(0, node.node_function("get_surface_override_material_count", [])):
+			add_material(node.node_function("get_surface_override_material", [i]))
+		if node.node_property("skin") != null:
+			for t in triggers:
+				t.shaders.push_back(&"Skeleton")
 
+static var tree: Dictionary[String, SSTTriggerTypeDescriptor] = {}
+static var _node_trigger_types: Dictionary[StringName, StringName] = {}
+static var _node_trigger_shaders_types: Dictionary[StringName, Array] = {
+	&"Label3D": [&"Scene", &"CanvasSdf"] as Array[StringName],
+	&"SpriteBase3D": [&"Scene"] as Array[StringName],
+	&"Light3D": [&"Light"] as Array[StringName],
+}
 static func prepare() -> void:
+	var original_trigger_types := _node_trigger_types.duplicate()
+	for type in _node_trigger_shaders_types:
+		_node_trigger_types[type] = type
+		for child in ClassDB.get_inheriters_from_class(type):
+			_node_trigger_types[child] = type
 	trigger_properties_by_class = {
 		&"Label3D": [
 			[&"alpha_antialiasing_mode", false],
@@ -22,7 +65,7 @@ static func prepare() -> void:
 			[&"shaded", false],
 			[&"texture_filter", false],
 		],
-		&"Sprite3D": [
+		&"SpriteBase3D": [
 			[&"alpha_antialiasing_mode", false],
 			[&"alpha_cut", false],
 			[&"billboard", false],
@@ -59,6 +102,7 @@ static func prepare() -> void:
 			trigger_properties_by_class[&"ParticleProcessMaterial"].push_back(
 				[StringName(name), true],
 			)
+	tree = generate_tree()
 	_prepared = true
 
 
@@ -74,7 +118,6 @@ static func prepare_keys_fallback(clazz: StringName):
 		):
 			trigger_properties_by_class[clazz].push_back([StringName(name), false])
 
-
 static func fill_keys_by_properties(source: Object, key: Dictionary, clazz: StringName) -> void:
 	if not _prepared:
 		prepare()
@@ -83,26 +126,24 @@ static func fill_keys_by_properties(source: Object, key: Dictionary, clazz: Stri
 	for p in trigger_properties_by_class[clazz]:
 		var k = p[0]
 		var is_nullable = p[1]
+		var value = source.node_property(k) if source is SSTNodeWrapper else source.get(k)
 		if is_nullable:
-			key[k] = source.get(k) == null
+			key[k] = value == null
 		else:
-			key[k] = source.get(k)
+			key[k] = value
 
 
-func add(obj: Object):
-	var collector := self
-	if obj is VisualInstance3D:
-		collector.add_from_visual_instance_3d(obj)
-	elif obj is GridMap:
-		collector.add_from_grid_map(obj)
-	elif obj is Environment:
-		collector.add_from_environment(obj)
-	elif obj is CanvasItem:
-		collector.add_from_canvas_item(obj)
-	elif obj is Camera3D:
-		collector.add_from_environment(obj.environment)
-	elif obj is WorldEnvironment:
-		collector.add_from_environment(obj.environment)
+func add_resource(res: Resource):
+	if res is Material:
+		add_material(res)
+	elif res is Mesh:
+		add_from_mesh(res)
+	elif res is MeshLibrary:
+		add_from_mesh_library(res)
+	elif res is MultiMesh:
+		add_from_mesh(res.mesh)
+	elif res is Environment:
+		add_from_environment(res)
 
 
 func add_material(mat: Material, prev_resources: Array[Resource] = []):
@@ -184,7 +225,51 @@ func add_shader(shader: Shader, prev_resources: Array[Resource] = []):
 			resources,
 		),
 	)
+static func generate_tree() -> Dictionary[String, SSTTriggerTypeDescriptor]:
+	var trigger_resources_parents := ["Material", "Mesh", "Shader", "MeshLibrary", "MultiMesh", "Environment"]
+	var trigger_resources : Dictionary[String, String] = {}
+	for r in trigger_resources_parents:
+		trigger_resources.set(r, r)
+		for rr in ClassDB.get_inheriters_from_class(r):
+			trigger_resources.set(rr, r)
+	var trigger_classes : Dictionary[String, SSTTriggerTypeDescriptor] = {}
+	for clazz in ClassDB.get_inheriters_from_class("Node"):
+		var trigger_descriptor := SSTTriggerTypeDescriptor.new()
+		var exclude_inherited := false
+		for property in ClassDB.class_get_property_list(clazz, exclude_inherited):
+			var name: String = property["name"]
+			var clazz_names: PackedStringArray = property["class_name"].split(",")
+			for clazz_name in clazz_names:
+				if clazz_name in trigger_resources:
+					trigger_descriptor.properties.push_back(name)
+					break
 
+		for method in ClassDB.class_get_method_list(clazz, exclude_inherited):
+			var property = method["return"]
+			var name: String = method["name"]
+			var clazz_names: PackedStringArray = property["class_name"].split(",")
+			if not name.begins_with("get_") or name.substr(4) in trigger_descriptor.properties:
+				continue
+			for clazz_name in clazz_names:
+				if clazz_name in trigger_resources:
+					trigger_descriptor.functions.push_back(method)
+					break
+
+		if trigger_descriptor.properties.size() > 0:
+			trigger_classes[clazz] = trigger_descriptor
+	return trigger_classes
+
+class SSTTriggerTypeDescriptor:
+	extends RefCounted
+	var clazz: String
+	var properties: Array[StringName] = []
+	var functions: Array = []
+
+func add_from_scene_state_node(scene_state: SceneState, idx: int):
+	var wrapper := SSTSceneStateNodeWrapper.new(scene_state, idx)
+	for property in tree.get(wrapper.node_class(), {"properties": []})["properties"]:
+		var value = wrapper.node_property(property)
+		add_resource(value)
 
 func add_from_mesh(mesh: Mesh, resources: Array[Resource] = []):
 	if mesh == null:
@@ -204,114 +289,6 @@ func add_from_mesh_library(lib: MeshLibrary):
 	for id in lib.get_item_list():
 		var mesh := lib.get_item_mesh(id)
 		add_from_mesh(mesh, [lib])
-
-
-func add_from_grid_map(node: GridMap):
-	var lib := node.mesh_library
-	add_from_mesh_library(lib)
-
-
-func add_from_visual_instance_3d(node: VisualInstance3D):
-	var path := SSTNodeUtils.get_node_path(node)
-	var clazz := node.get_class()
-	# Decal: all decals are drowed by one shader, so just ignore it
-	if node is Decal:
-		triggers.push_back(
-			SSTTriggerCandidate.new(
-				node,
-				SSTTriggerCandidate.Type.NODE,
-				clazz,
-				[&"Scene"],
-				path,
-				{ "class": "Decal" },
-			),
-		)
-		return
-	# FogVolume
-	if node is FogVolume:
-		# TODO: check in Mobile/Forward+ RenderingServer.FogVolumeShapeshape
-		add_material(node.material)
-		return
-	# GeometryInstance3D
-	if node is GeometryInstance3D:
-		var gi := node as GeometryInstance3D
-		add_material(gi.material_overlay)
-		add_material(gi.material_override)
-		# CPUParticles3D
-		if gi is CPUParticles3D:
-			var p := gi as CPUParticles3D
-			add_from_mesh(p.mesh)
-		# CSGShape3D
-		elif gi is CSGShape3D:
-			if "material" in gi:
-				add_material(gi.material)
-			if "mesh" in gi:
-				add_from_mesh(gi.mesh)
-		# GPUParticles3D
-		elif gi is GPUParticles3D:
-			var p := gi as GPUParticles3D
-			add_material(p.process_material)
-			for i in range(0, p.draw_passes):
-				add_from_mesh(p.get_draw_pass_mesh(i))
-		# MeshInstance3D
-		elif gi is MeshInstance3D:
-			var m := gi as MeshInstance3D
-			for i in range(0, m.get_surface_override_material_count()):
-				add_material(m.get_surface_override_material(i))
-			add_from_mesh(m.mesh)
-			if m.skin != null:
-				for t in triggers:
-					t.shaders.push_back(&"Skeleton")
-		# MultiMeshInstance3D
-		elif gi is MultiMeshInstance3D:
-			var mm := gi as MultiMeshInstance3D
-			if mm.multimesh != null:
-				add_from_mesh(mm.multimesh.mesh)
-		# Label3D
-		elif gi is Label3D:
-			var key := { "class": "Label3D" }
-			fill_keys_by_properties(node, key, &"Label3D")
-			triggers.push_back(
-				SSTTriggerCandidate.new(
-					node,
-					SSTTriggerCandidate.Type.NODE,
-					clazz,
-					[&"Scene", &"CanvasSdf"],
-					path,
-					key,
-				),
-			)
-		# SpriteBase3D
-		elif gi is SpriteBase3D:
-			var key := { "class": gi.get_class() }
-			fill_keys_by_properties(node, key, &"SpriteBase3D")
-			triggers.push_back(
-				SSTTriggerCandidate.new(node, SSTTriggerCandidate.Type.NODE, clazz, [&"Scene"], path, key),
-			)
-	if node is Light3D:
-		if (node as Light3D).editor_only:
-			return
-		var key := { "class": node.get_class() }
-		fill_keys_by_properties(node, key, &"Light3D")
-		fill_keys_by_properties(node, key, node.get_class())
-		triggers.push_back(
-			SSTTriggerCandidate.new(node, SSTTriggerCandidate.Type.NODE, clazz, [&"LIGHT"], path, key),
-		)
-
-	# Rest subtypes don't use materials (todo: check)
-	# GPUParticlesAttractor3D
-	# GPUParticlesCollision3D
-	# LightmapGI
-	# OccluderInstance3D
-	# OpenXRVisibilityMask
-	# ReflectionProbe
-	# RootMotionView
-	# VisibleOnScreenNotifier3D
-	# VoxelGI
-
-
-func add_from_canvas_item(node: CanvasItem):
-	add_material(node.material)
 
 
 func add_from_environment(env: Environment):

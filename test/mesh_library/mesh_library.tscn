@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://ctbx8tfrhoium"]
+
+[ext_resource type="Material" uid="uid://m1w6an4q14i" path="res://test/mesh_library/mat_01.tres" id="1_eprbl"]
+[ext_resource type="Material" uid="uid://ikc0erno3ytg" path="res://test/mesh_library/mat_02.tres" id="2_sgleg"]
+[ext_resource type="Material" uid="uid://us0ij8571ivk" path="res://test/mesh_library/mat_03.tres" id="3_a0k62"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_x5tyc"]
+material = ExtResource("1_eprbl")
+
+[sub_resource type="QuadMesh" id="QuadMesh_13b55"]
+
+[node name="MeshLibrary" type="Node3D" unique_id=754815928]
+
+[node name="01" type="MeshInstance3D" parent="." unique_id=710130601]
+mesh = SubResource("PlaneMesh_x5tyc")
+
+[node name="02" type="MeshInstance3D" parent="." unique_id=798066059]
+mesh = SubResource("QuadMesh_13b55")
+surface_material_override/0 = ExtResource("2_sgleg")
+
+[node name="03" type="MeshInstance3D" parent="." unique_id=989670361]
+mesh = SubResource("QuadMesh_13b55")
+surface_material_override/0 = ExtResource("3_a0k62")

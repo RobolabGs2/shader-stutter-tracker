@@ -32,4 +32,4 @@ func run(t: GutTest) -> void:
 	await t.wait_idle_frames(4)
 	var diff := cache_watcher.check()
 	t.assert_eq(diff, { }, "Unexpected shaders:\n%s" % diff)
-	pass
+	cache_watcher.unregister_monitors()
