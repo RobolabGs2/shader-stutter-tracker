@@ -11,11 +11,7 @@ static var nodes_triggers_to_parents: Dictionary[StringName, StringName]:
 		if not _prepared:
 			prepare()
 		return _nodes_triggers_to_parents
-static var nodes_triggers_shaders_types: Dictionary[StringName, Array] = {
-	&"Label3D": [&"Scene", &"CanvasSdf"] as Array[StringName],
-	&"SpriteBase3D": [&"Scene"] as Array[StringName],
-	&"Light3D": [&"Light"] as Array[StringName],
-}
+static var nodes_triggers_shaders_types: Dictionary[StringName, Array] = { }
 static var _trigger_properties_by_class: Dictionary[StringName, Array] = { }
 static var _nodes_triggers_to_parents: Dictionary[StringName, StringName] = { }
 static var _prepared := false
@@ -23,6 +19,11 @@ static var _nodes_with_trigger_propertiestree: Dictionary[String, SSTTriggerType
 
 
 static func prepare() -> void:
+	nodes_triggers_shaders_types = {
+		&"Label3D": [&"Scene", &"CanvasSdf"] as Array[StringName],
+		&"SpriteBase3D": [&"Scene"] as Array[StringName],
+		&"Light3D": [&"Light"] as Array[StringName],
+	}
 	for type in nodes_triggers_shaders_types:
 		_nodes_triggers_to_parents[type] = type
 		for child in ClassDB.get_inheriters_from_class(type):

@@ -2,10 +2,10 @@ class_name SSTTriggerExtractor
 extends RefCounted
 
 var triggers: Array[SSTTriggerCandidate] = []
-var savedmats := { }
+var _keys := { }
 
 
-func extract(node: SSTNodeWrapper):
+func extract(node: SSTNodeWrapper) -> void:
 	var clazz := node.node_class()
 	if SSTTriggerClassInfo.nodes_with_trigger_properties.has(clazz):
 		var descriptor := SSTTriggerClassInfo.nodes_with_trigger_properties[clazz]
@@ -18,7 +18,7 @@ func extract(node: SSTNodeWrapper):
 		var parent := SSTTriggerClassInfo.nodes_triggers_to_parents[c]
 		if parent != c:
 			SSTTriggerClassInfo.fill_keys_by_properties(node, key, parent)
-		triggers.push_back(
+		_add_trigger(
 			SSTTriggerCandidate.new(
 				node,
 				SSTTriggerCandidate.Type.NODE,
@@ -79,10 +79,7 @@ func add_material(mat: Material, prev_resources: Array[Resource] = []):
 	else:
 		key["path"] = mat.resource_path
 	var path := mat.resource_path
-	if savedmats.has(key):
-		return
-	savedmats[key] = true
-	triggers.push_back(
+	_add_trigger(
 		SSTTriggerCandidate.new(
 			mat,
 			SSTTriggerCandidate.Type.RESOURCE,
@@ -101,9 +98,6 @@ func add_shader(shader: Shader, prev_resources: Array[Resource] = []):
 	var code := shader.code
 	var mode := shader.get_mode()
 	var k := { "class": "Shader", "hash": code.hash(), "mode": mode }
-	if savedmats.has(k):
-		return
-	savedmats[k] = true
 	resources.push_back(shader)
 	var shader_types = {
 		# Mode used to draw all 3D objects.
@@ -117,7 +111,7 @@ func add_shader(shader: Shader, prev_resources: Array[Resource] = []):
 		# Mode used for setting the color and density of volumetric fog effect.
 		Shader.Mode.MODE_FOG: [&"Sky"] as Array[StringName],
 	}[mode]
-	triggers.push_back(
+	_add_trigger(
 		SSTTriggerCandidate.new(
 			shader,
 			SSTTriggerCandidate.Type.RESOURCE,
@@ -173,7 +167,7 @@ func add_from_environment(env: Environment):
 	if env.glow_enabled:
 		shader_types.push_back(&"Glow")
 	if shader_types.size() != 0:
-		triggers.push_back(
+		_add_trigger(
 			SSTTriggerCandidate.new(
 				env,
 				SSTTriggerCandidate.Type.RESOURCE,
@@ -184,3 +178,10 @@ func add_from_environment(env: Environment):
 				prev_resources,
 			),
 		)
+
+
+func _add_trigger(trigger: SSTTriggerCandidate) -> void:
+	if _keys.has(trigger.key):
+		return
+	triggers.push_back(trigger)
+	_keys[trigger.key] = true

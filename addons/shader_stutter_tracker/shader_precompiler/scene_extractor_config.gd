@@ -6,6 +6,10 @@ enum SSTSceneExtractorPrecompilerConfigSetting {
 	MANUALLY,
 	RUNTIME,
 }
+enum SSTSceneExtractorPrecompilerConfigMode {
+	INSTANTIATE,
+	SCENE_STATE,
+}
 
 ## Scan scenes in runtime
 @export var extract_triggers := SSTSceneExtractorPrecompilerConfigSetting.RUNTIME:
@@ -38,6 +42,7 @@ enum SSTSceneExtractorPrecompilerConfigSetting {
 		return _nodes
 	set(value):
 		_nodes = value.duplicate()
+@export var extraction_mode := SSTSceneExtractorPrecompilerConfigMode.SCENE_STATE
 @export_tool_button("Update cache", "Reload") var update_cache_action := refresh
 @export_tool_button("Clear cache", "Remove") var clear_cache_action := clear
 
@@ -54,6 +59,12 @@ static func _extract(node: Node, collector: SSTTriggerExtractor):
 	collector.extract(SSTRuntimeNodeWrapper.new(node))
 	for child in node.get_children(true):
 		_extract(child, collector)
+
+
+static func _extract_state_wrapper(node: SSTSceneStateNodeWrapper, collector: SSTTriggerExtractor):
+	collector.extract(node)
+	for child in node.children:
+		_extract_state_wrapper(node.children[child], collector)
 
 
 static func _get_scenes_in_folder(folder_path: String, recursive: bool) -> Array[PackedScene]:
@@ -162,9 +173,22 @@ func _add_from_scenes():
 
 
 func _add_from_scene(extractor: SSTTriggerExtractor, scene: PackedScene):
-	var root := scene.instantiate()
-	_extract(root, extractor)
-	for trigger in extractor.triggers:
+	if extraction_mode == SSTSceneExtractorPrecompilerConfigMode.SCENE_STATE:
+		var state := scene.get_state()
+		var root := SSTSceneStateNodeWrapper.build_tree(state)
+		_extract_state_wrapper(root, extractor)
+		_add_triggers(extractor.triggers)
+		extractor.triggers.clear()
+	else:
+		var root := scene.instantiate()
+		_extract(root, extractor)
+		_add_triggers(extractor.triggers)
+		extractor.triggers.clear()
+		root.free()
+
+
+func _add_triggers(triggers: Array[SSTTriggerCandidate]):
+	for trigger in triggers:
 		if trigger.type == SSTTriggerCandidate.Type.RESOURCE:
 			var resource: Resource = trigger.trigger
 			if resource is Material:
@@ -191,7 +215,6 @@ func _add_from_scene(extractor: SSTTriggerExtractor, scene: PackedScene):
 					&"properties": node.node_copy_properties({ }, [TYPE_BOOL, TYPE_INT, TYPE_FLOAT, TYPE_STRING]),
 				},
 			)
-	root.free()
 
 
 func _lazy_rescan():
