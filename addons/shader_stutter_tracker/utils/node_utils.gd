@@ -112,7 +112,6 @@ static func copy_properties(src: Node, dst = { }, type_filter: Array[Variant.Typ
 			continue
 		if value is Resource:
 			value = value.duplicate_deep()
-			value.resource_local_to_scene = true
 			value.resource_path = ""
 		if dst is Dictionary or dst.has_method("set"):
 			dst.set(name, value)

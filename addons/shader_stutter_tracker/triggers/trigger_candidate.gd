@@ -27,7 +27,7 @@ static func from_or_unknown(obj: SSTNodeWrapper) -> Array[SSTTriggerCandidate]:
 		return triggers
 	@warning_ignore("shadowed_variable")
 	var key := { "class": obj.node_class() }
-	SSTTriggerExtractor.fill_keys_by_properties(obj, key, StringName(obj.node_class()))
+	SSTTriggerClassInfo.fill_keys_by_properties(obj, key, StringName(obj.node_class()))
 	return [
 		SSTTriggerCandidate.new(obj, Type.NODE, obj.node_class(), ["UNKNOWN"], obj.node_path(), key),
 	]
