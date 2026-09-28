@@ -20,6 +20,7 @@ var _stub_texture := GradientTexture1D.new()
 
 func _ready():
 	if compile_on_ready:
+		await get_tree().process_frame
 		await compile()
 
 

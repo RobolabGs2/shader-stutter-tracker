@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://wbejx4s8et1j"]
+
+[ext_resource type="PackedScene" uid="uid://bxurt7h7q31rb" path="res://test/inheritance_gltf_test.tscn" id="1_fffni"]
+
+[node name="DoubleInheritanceTest" unique_id=1104203673 instance=ExtResource("1_fffni")]

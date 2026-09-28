@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bqgk1cai2mdap"]
+
+[ext_resource type="Script" uid="uid://cfvldac2sfe1y" path="res://addons/shader_stutter_tracker_test/test_types/shader_precompiler_test.gd" id="1_a2251"]
+[ext_resource type="PackedScene" uid="uid://ei8c6p3rnk87" path="res://test/scene_extractor_config_tests.tscn" id="2_qiorl"]
+
+[node name="PrecompilerTest" type="Node" unique_id=773236170]
+script = ExtResource("1_a2251")
+triggers_source = ExtResource("2_qiorl")

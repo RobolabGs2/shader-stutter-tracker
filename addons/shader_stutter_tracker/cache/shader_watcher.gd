@@ -26,6 +26,11 @@ static func _diff(
 	return res
 
 
+static func _monitor_shader_key(shader_key: String) -> String:
+	var keys := shader_key.split("Shader")
+	return &"shaders_cache_%s/%s" % [keys[1], keys[0]]
+
+
 @warning_ignore("shadowed_variable")
 func _init(settings: SSTShaderWatcherSettings):
 	self.settings = settings
@@ -35,10 +40,16 @@ func _init(settings: SSTShaderWatcherSettings):
 
 
 func register_monitor(shader_key: String) -> void:
-	var keys := shader_key.split("Shader")
-	var name := &"shaders_cache_%s/%s" % [keys[1], keys[0]]
+	var name := _monitor_shader_key(shader_key)
 	if not Performance.has_custom_monitor(name):
 		Performance.add_custom_monitor(name, get_shaders_count, [shader_key])
+
+
+func unregister_monitors() -> void:
+	for shader in state:
+		var shader_key := _monitor_shader_key(shader)
+		if Performance.has_custom_monitor(shader_key):
+			Performance.remove_custom_monitor(shader_key)
 
 
 ## Return new compiled shaders

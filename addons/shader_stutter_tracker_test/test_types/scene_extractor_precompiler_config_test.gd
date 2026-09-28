@@ -30,6 +30,7 @@ func run(t: GutTest) -> void:
 	var actual := SSTSceneExtractorPrecompilerConfig.new()
 	var packed_scene := PackedScene.new()
 	packed_scene.pack(self)
+	actual.extraction_mode = SSTSceneExtractorPrecompilerConfig.SSTSceneExtractorPrecompilerConfigMode.SCENE_STATE
 	actual.scenes = [packed_scene]
 	actual.refresh()
 	var material_diff := arrays_are_equal_without_order(expected.materials, actual.materials)

@@ -6,6 +6,10 @@ enum SSTSceneExtractorPrecompilerConfigSetting {
 	MANUALLY,
 	RUNTIME,
 }
+enum SSTSceneExtractorPrecompilerConfigMode {
+	INSTANTIATE,
+	SCENE_STATE,
+}
 
 ## Scan scenes in runtime
 @export var extract_triggers := SSTSceneExtractorPrecompilerConfigSetting.RUNTIME:
@@ -38,6 +42,7 @@ enum SSTSceneExtractorPrecompilerConfigSetting {
 		return _nodes
 	set(value):
 		_nodes = value.duplicate()
+@export var extraction_mode := SSTSceneExtractorPrecompilerConfigMode.SCENE_STATE
 @export_tool_button("Update cache", "Reload") var update_cache_action := refresh
 @export_tool_button("Clear cache", "Remove") var clear_cache_action := clear
 
@@ -50,10 +55,16 @@ var _environments: Array[Environment] = []
 var _nodes: Array[Dictionary] = []
 
 
-static func _extract(node: Node, collector: SSTTriggerCollector):
-	collector.add_new_triggers(node, SSTTriggerCandidate.from(node))
+static func _extract(node: Node, collector: SSTTriggerExtractor):
+	collector.extract(SSTRuntimeNodeWrapper.new(node))
 	for child in node.get_children(true):
 		_extract(child, collector)
+
+
+static func _extract_state_wrapper(node: SSTSceneStateNodeWrapper, collector: SSTTriggerExtractor):
+	collector.extract(node)
+	for child in node.children:
+		_extract_state_wrapper(node.children[child], collector)
 
 
 static func _get_scenes_in_folder(folder_path: String, recursive: bool) -> Array[PackedScene]:
@@ -137,7 +148,7 @@ func add_scenes_from_directory(dir_path: String, recursive: bool):
 
 
 func _add_from_scenes():
-	var collector := SSTTriggerCollector.new(true)
+	var collector := SSTTriggerExtractor.new()
 	var visited_scenes: Dictionary[String, bool] = { }
 	for scene in scenes:
 		var path := scene.resource_path
@@ -161,15 +172,49 @@ func _add_from_scenes():
 		)
 
 
-func _add_from_scene(collector: SSTTriggerCollector, scene: PackedScene):
-	var root := scene.instantiate()
-	_extract(root, collector)
-	var report := SSTTriggerCollector.grouped_report(collector.report())
-	_materials.append_array(report["materials"])
-	_environments.append_array(report["environments"])
-	_nodes.append_array(report["nodes"].map(func(dict: Dictionary): return { &"class": dict.get(&"class"), &"properties": dict.get(&"properties") }))
-	collector.clear()
-	root.free()
+func _add_from_scene(extractor: SSTTriggerExtractor, scene: PackedScene):
+	if extraction_mode == SSTSceneExtractorPrecompilerConfigMode.SCENE_STATE:
+		var state := scene.get_state()
+		var root := SSTSceneStateNodeWrapper.build_tree(state)
+		_extract_state_wrapper(root, extractor)
+		_add_triggers(extractor.triggers)
+		extractor.triggers.clear()
+	else:
+		var root := scene.instantiate()
+		_extract(root, extractor)
+		_add_triggers(extractor.triggers)
+		extractor.triggers.clear()
+		root.free()
+
+
+func _add_triggers(triggers: Array[SSTTriggerCandidate]):
+	for trigger in triggers:
+		if trigger.type == SSTTriggerCandidate.Type.RESOURCE:
+			var resource: Resource = trigger.trigger
+			if resource is Material:
+				materials.push_back(resource)
+			if resource is Shader:
+				var shader := resource as Shader
+				var resources: Array = trigger.resources_chain
+				if resources.size() > 1:
+					@warning_ignore("confusable_local_declaration")
+					var mat = resources[resources.size() - 2]
+					if mat != null:
+						_materials.push_back(mat)
+						continue
+				var mat := ShaderMaterial.new()
+				mat.shader = shader
+				_materials.push_back(mat)
+			if resource is Environment:
+				_environments.push_back(resource)
+		else:
+			var node: SSTNodeWrapper = trigger.trigger
+			_nodes.append(
+				{
+					&"class": node.node_class(),
+					&"properties": node.node_copy_properties({ }, [TYPE_BOOL, TYPE_INT, TYPE_FLOAT, TYPE_STRING]),
+				},
+			)
 
 
 func _lazy_rescan():

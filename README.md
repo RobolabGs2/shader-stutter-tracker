@@ -1,17 +1,10 @@
-
-
-
-
-
-
 # Shader Stutter Tracker
 
 A Godot 4.6+ add-on to debug and fix shader compilation stutters in the Compatibility rendering pipeline.
 
 ## Limitations
 
-1. Currently supports 3D nodes and Control; not all 2D nodes and Camera2D are supported yet.
-2. Debugging tools do not yet capture all possible compilation triggers; the project is under 
+Debugging tools do not yet capture all possible compilation triggers; the project is under 
 development.
 
 ## Installation
@@ -44,8 +37,40 @@ Example scene with precompilation: `addons/shader_stutter_tracker/examples/preco
 
 #### Limitations
 
-1. Not all node types may be covered. Comprehensive analysis of compilation triggers is a complex and difficult task. For instructions on identifying a problematic node, refer to the Debugging section. If you successfully identify a new compilation trigger, please create an issue.
-2. Dynamically changed or created triggers and scenes loaded via `load`/`preload` cannot be covered by `SSTSceneExtractorPrecompilerConfig`. Add these scenes manually.
+1. Dynamically changed or created triggers and scenes loaded via `load`/`preload` cannot be covered by `SSTSceneExtractorPrecompilerConfig`. Add these scenes manually.
+2. Not all node types may be covered. Comprehensive analysis of compilation triggers is a complex and difficult task. For instructions on identifying a problematic node, refer to the Debugging section. If you successfully identify a new compilation trigger, please create an issue.
+
+Two trigger sources are checked:
+1. Specific node types: `Label3D`, `SpriteBase3D`, `Light3D` and their subtypes.
+2. Node properties that contain resources like `Material`, `Mesh`, `Shader`, `MeshLibrary`, `MultiMesh`, `Environment`.
+
+Supported node properties (inherited properties are hidden):
+|Property/Function|Type|
+|---|---|
+|CanvasItem.material|CanvasItemMaterial|
+|GeometryInstance3D.material_override|BaseMaterial3D|
+|GeometryInstance3D.material_overlay|BaseMaterial3D|
+|Camera3D.environment|Environment|
+|MeshInstance3D.mesh|Mesh|
+|MeshInstance3D.skin|Skin|
+|MeshInstance3D.get_surface_override_material(surface)|Material|
+|GPUParticles3D.process_material|ParticleProcessMaterial|
+|GPUParticles3D.get_draw_pass_mesh(pass)|Mesh|
+|CPUParticles3D.mesh|Mesh|
+|MultiMeshInstance3D.multimesh|MultiMesh|
+|WorldEnvironment.environment|Environment|
+|GPUParticles2D.process_material|ParticleProcessMaterial|
+|MeshInstance2D.mesh|Mesh|
+|MultiMeshInstance2D.multimesh|MultiMesh|
+|CSGMesh3D.mesh|Mesh|
+|CSGMesh3D.material|BaseMaterial3D|
+|CSGSphere3D.material|BaseMaterial3D|
+|CSGBox3D.material|BaseMaterial3D|
+|CSGCylinder3D.material|BaseMaterial3D|
+|CSGTorus3D.material|BaseMaterial3D|
+|CSGPolygon3D.material|BaseMaterial3D|
+|GridMap.mesh_library|MeshLibrary|
+
 
 ### Debugging
 

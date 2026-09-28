@@ -1,13 +1,17 @@
 extends SSTTBaseTest
 
 @export var triggers_source: PackedScene
+@export var scene_extraction_mode := SSTSceneExtractorPrecompilerConfig.SSTSceneExtractorPrecompilerConfigMode.SCENE_STATE
 @export var timeout: int = 10
 
 
 func run(t: GutTest) -> void:
 	var config := SSTSceneExtractorPrecompilerConfig.new()
 	config.scenes = [triggers_source]
+	config.extraction_mode = scene_extraction_mode
+	config.extract_triggers = SSTSceneExtractorPrecompilerConfig.SSTSceneExtractorPrecompilerConfigSetting.MANUALLY
 	config.refresh()
+
 	var cache_dict := SSTSettingSpec.SSTDictionarySettingsSource.new(
 		{
 			"enable": true,
@@ -25,11 +29,11 @@ func run(t: GutTest) -> void:
 	compiler.free_after_compilation = false
 	t.add_child_autofree(compiler)
 	await t.wait_for_signal(compiler.all_shaders_compiled, timeout)
-	t.assert_signal_emitted(compiler, "all_shaders_compiled", "Shaders not compiled within %d sec" % timeout)
+	t.assert_signal_emitted(compiler, "all_shaders_compiled", "Shaders must be compiled within %d sec" % timeout)
 	await t.wait_idle_frames(2)
 	cache_watcher.check()
 	t.add_child_autofree(triggers_source.instantiate())
 	await t.wait_idle_frames(4)
 	var diff := cache_watcher.check()
-	t.assert_eq(diff, { }, "Unexpected shaders:\n%s" % diff)
-	pass
+	t.assert_eq_deep(diff, { })
+	cache_watcher.unregister_monitors()
