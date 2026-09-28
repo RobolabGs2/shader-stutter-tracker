@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://byl55umtk04xi"]
+
+[sub_resource type="Shader" id="Shader_oscvk"]
+code = "shader_type canvas_item;
+
+void fragment() {
+	COLOR = vec4(0.0, 0.5, 1.0, 1.0);
+}
+"
+
+[resource]
+shader = SubResource("Shader_oscvk")

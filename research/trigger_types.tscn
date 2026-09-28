@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://hcnhdc2jv8gm"]
+
+[sub_resource type="GDScript" id="GDScript_hwp6q"]
+script/source = "extends Control
+@onready var tree: Tree = $Tree
+
+func _ready() -> void:
+	var data := SSTTriggerClassInfo.nodes_with_trigger_properties
+	var root := tree.create_item()
+	for t in data:
+		var desc := data[t]
+		var type_item := root.create_child()
+		type_item.set_text(0, t)
+		for i in desc.properties.size():
+			var property_item := type_item.create_child()
+			property_item.set_text(0, desc.properties[i])
+			property_item.set_text(1, desc.properties_types[i])
+		for f in desc.functions:
+			var function_item := type_item.create_child()
+			function_item.set_text(0, 
+				\"%s(%s)\" % [
+					f[\"name\"], 
+					\", \".join(
+						(f[\"args\"] as Array).map(func(a): return a[\"name\"])
+					)
+				]
+			)
+			function_item.set_text(1, f[\"return\"][\"class_name\"])
+	print(_render_md())
+	
+
+func _render_md() -> String:
+	var md :=\"|Property/Function|Type|\\n\"
+	md+=\"|---|---|\\n\"
+	for type_item in tree.get_root().get_children():
+		for property_item in type_item.get_children():
+			md+=\"|%s.%s|%s|\\n\" % [type_item.get_text(0), property_item.get_text(0), property_item.get_text(1)]
+	return md
+"
+
+[node name="TriggerTypes" type="ScrollContainer" unique_id=1058050064]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_hwp6q")
+
+[node name="Tree" type="Tree" parent="." unique_id=953905958]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2

@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://3vlnfaodmmip"]
+
+[ext_resource type="PackedScene" uid="uid://bsrj7ofeo4rxp" path="res://test/inheritance_test_data/mesh_instance_scene.tscn" id="1_4khuc"]
+[ext_resource type="Script" uid="uid://d3yg4e5j0x6hg" path="res://addons/shader_stutter_tracker_test/test_types/scene_extractor_precompiler_config_test.gd" id="2_ktkh5"]
+[ext_resource type="Material" uid="uid://bwv8tkaoj61px" path="res://test/inheritance_test_data/standard_material_3d.tres" id="3_m1u0x"]
+[ext_resource type="Script" uid="uid://cejy88jrfph1m" path="res://addons/shader_stutter_tracker/shader_precompiler/config.gd" id="4_8aj48"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_4khuc"]
+
+[sub_resource type="Resource" id="Resource_fqw2o"]
+script = ExtResource("4_8aj48")
+materials = Array[Material]([ExtResource("3_m1u0x"), SubResource("ORMMaterial3D_4khuc")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[node name="InheritanceWithOverrideTest" unique_id=1557069951 instance=ExtResource("1_4khuc")]
+script = ExtResource("2_ktkh5")
+expected = SubResource("Resource_fqw2o")
+
+[node name="Mesh" parent="." index="0" unique_id=1962624102]
+surface_material_override/0 = SubResource("ORMMaterial3D_4khuc")

@@ -12,6 +12,13 @@ var _path: String
 ## Return tree root
 static func build_tree(scene: SceneState) -> SSTSceneStateNodeWrapper:
 	var root := SSTSceneStateNodeWrapper.new(scene, 0)
+
+	var base := scene.get_base_scene_state()
+	if base != null:
+		root = build_tree(base)
+		root._scene = scene
+		root.override_properties(scene, 0)
+
 	for idx in range(1, scene.get_node_count()):
 		var instance := scene.get_node_instance(idx)
 		if instance != null:

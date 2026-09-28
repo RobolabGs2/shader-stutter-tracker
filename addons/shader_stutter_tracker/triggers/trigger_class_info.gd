@@ -127,6 +127,7 @@ static func generate_tree() -> Dictionary[String, SSTTriggerTypeDescriptor]:
 			for clazz_name in clazz_names:
 				if clazz_name in trigger_resources:
 					trigger_descriptor.properties.push_back(name)
+					trigger_descriptor.properties_types.push_back(clazz_name)
 					break
 
 		for method in ClassDB.class_get_method_list(clazz, exclude_inherited):
@@ -147,6 +148,6 @@ static func generate_tree() -> Dictionary[String, SSTTriggerTypeDescriptor]:
 
 class SSTTriggerTypeDescriptor:
 	extends RefCounted
-	var clazz: String
 	var properties: Array[StringName] = []
+	var properties_types: Array[StringName] = []
 	var functions: Array = []

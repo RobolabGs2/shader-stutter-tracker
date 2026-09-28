@@ -28,7 +28,7 @@ func extract(node: SSTNodeWrapper) -> void:
 				key,
 			),
 		)
-	if c == &"MeshInstance3D":
+	if c == &"MeshInstance3D" or c == &"SoftBody3D":
 		for i in range(0, node.node_function("get_surface_override_material_count", [])):
 			add_material(node.node_function("get_surface_override_material", [i]))
 		if node.node_property("skin") != null:

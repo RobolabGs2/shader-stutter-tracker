@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://bdmxkrkg8unb1"]
+
+[ext_resource type="Script" uid="uid://d3yg4e5j0x6hg" path="res://addons/shader_stutter_tracker_test/test_types/scene_extractor_precompiler_config_test.gd" id="1_qgwjf"]
+[ext_resource type="Material" uid="uid://dd3wjtqcbe2s7" path="res://test/complex_hierarchy_test_data/canvas_item_material01.tres" id="2_oscvk"]
+[ext_resource type="Material" uid="uid://dc5k5y88kxfwh" path="res://test/complex_hierarchy_test_data/canvas_item_material02.tres" id="3_cfssy"]
+[ext_resource type="Material" uid="uid://cektt2yr8nkcj" path="res://test/complex_hierarchy_test_data/shader_material01.tres" id="4_oscvk"]
+[ext_resource type="Material" uid="uid://byl55umtk04xi" path="res://test/complex_hierarchy_test_data/shader_material02.tres" id="5_8d8p8"]
+[ext_resource type="Script" uid="uid://cejy88jrfph1m" path="res://addons/shader_stutter_tracker/shader_precompiler/config.gd" id="6_2eaa1"]
+
+[sub_resource type="Resource" id="Resource_hlo5b"]
+script = ExtResource("6_2eaa1")
+materials = Array[Material]([ExtResource("2_oscvk"), ExtResource("3_cfssy"), ExtResource("4_oscvk"), ExtResource("5_8d8p8")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[node name="ComplexHierarchyTest" type="Node" unique_id=484528397]
+script = ExtResource("1_qgwjf")
+expected = SubResource("Resource_hlo5b")
+
+[node name="Panel" type="Panel" parent="." unique_id=1869427804]
+material = ExtResource("2_oscvk")
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="Panel" parent="Panel" unique_id=1421533401]
+material = ExtResource("2_oscvk")
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="Panel" parent="Panel/Panel" unique_id=1690345534]
+material = ExtResource("3_cfssy")
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel2" type="Panel" parent="Panel" unique_id=735719741]
+material = ExtResource("4_oscvk")
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="Panel" parent="Panel/Panel2" unique_id=1772351872]
+material = ExtResource("4_oscvk")
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel2" type="Panel" parent="Panel/Panel2" unique_id=1780743618]
+material = ExtResource("5_8d8p8")
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

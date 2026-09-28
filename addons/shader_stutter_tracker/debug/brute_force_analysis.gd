@@ -72,6 +72,6 @@ class SSTCurrentNodeTriggerCollectorService:
 
 
 	func collect() -> SSTTriggerCollector:
-		var triggers := SSTTriggerCandidate.from_or_unknown(current_node)
+		var triggers := SSTTriggerCandidate.from_or_unknown(SSTRuntimeNodeWrapper.new(current_node))
 		collector.add_new_triggers_force(current_node, triggers)
 		return collector

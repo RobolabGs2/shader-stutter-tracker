@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dr00dj25jxgjy"]
+
+[ext_resource type="PackedScene" uid="uid://bsrj7ofeo4rxp" path="res://test/inheritance_test_data/mesh_instance_scene.tscn" id="1_30bsr"]
+[ext_resource type="Script" uid="uid://d3yg4e5j0x6hg" path="res://addons/shader_stutter_tracker_test/test_types/scene_extractor_precompiler_config_test.gd" id="2_hsk4v"]
+[ext_resource type="Material" uid="uid://bwv8tkaoj61px" path="res://test/inheritance_test_data/standard_material_3d.tres" id="3_drwd3"]
+[ext_resource type="Script" uid="uid://cejy88jrfph1m" path="res://addons/shader_stutter_tracker/shader_precompiler/config.gd" id="4_pbfm0"]
+
+[sub_resource type="Resource" id="Resource_fqw2o"]
+script = ExtResource("4_pbfm0")
+materials = Array[Material]([ExtResource("3_drwd3")])
+metadata/_custom_type_script = "uid://cejy88jrfph1m"
+
+[node name="InheritanceTest" unique_id=1557069951 instance=ExtResource("1_30bsr")]
+script = ExtResource("2_hsk4v")
+expected = SubResource("Resource_fqw2o")
